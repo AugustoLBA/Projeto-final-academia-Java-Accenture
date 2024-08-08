@@ -2,8 +2,9 @@ package br.acc.banco.models;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 
+import br.acc.banco.models.enums.TipoOperacao;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -27,11 +29,10 @@ public class Operacao implements Serializable {
     private Long id;
 	
 	@Column(name = "data_realizada")
-	private LocalDateTime dataRealizada;
+	private Date dataRealizada;
 	
 	@Column(name = "valor", nullable = false)
 	private BigDecimal valor;
-	
 	
 	@ManyToOne
 	@JoinColumn(name = "conta_corrente_id")
@@ -39,6 +40,9 @@ public class Operacao implements Serializable {
 	
 	@Column(name = "nome_estabeleciento", nullable = true)
 	private String nomeEstabelecimento;
+	
+	@Column(name = "chave_pix", nullable = true)
+	private String chavePix;
 	
 	@ManyToOne
 	@JoinColumn(name = "conta_corrente_destino_id", nullable = true)
@@ -48,8 +52,9 @@ public class Operacao implements Serializable {
 	@Column(name = "tipo", nullable = false)
 	private TipoOperacao tipo;
 	
-	
-	public enum TipoOperacao{
-		SAQUE,DEPOSITO,TRANSFERENCIA,COMPRA,PIX;
-	}
+	@PrePersist
+    public void prePersist() {
+        final Date atual = new Date();
+        dataRealizada = atual;
+    }
 }

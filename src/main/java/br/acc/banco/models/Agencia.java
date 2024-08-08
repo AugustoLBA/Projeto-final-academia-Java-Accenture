@@ -2,7 +2,9 @@ package br.acc.banco.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +31,9 @@ public class Agencia implements Serializable{
 	@Column(name = "telefone", nullable = false,length = 11)
 	private String telefone;
 	
+	@Column(name = "endereco")
+	private String endereco;
+	
 	@OneToMany(mappedBy = "agencia")
-	private List<ContaCorrente> contas = new ArrayList<>();
+	private Set<ContaCorrente> contas = new HashSet();
 }

@@ -1,9 +1,9 @@
 package br.acc.banco.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 
-import br.acc.banco.models.Operacao;
+import br.acc.banco.models.enums.TipoOperacao;
 import lombok.Data;
 
 @Data
@@ -11,9 +11,9 @@ public class OperacaoResponseDTO {
 
 	private Long id;
 
-    private LocalDateTime dataRealizada;
+    private Date dataRealizada;
 
-    private Operacao.TipoOperacao tipo;
+    private TipoOperacao tipo;
 
     private BigDecimal valor;
 

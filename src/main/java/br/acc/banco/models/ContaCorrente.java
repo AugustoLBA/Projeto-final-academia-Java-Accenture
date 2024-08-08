@@ -4,7 +4,10 @@ import java.io.Serializable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -34,6 +38,9 @@ public class ContaCorrente implements Serializable{
 	@Column(name = "saldo", nullable = false)
     private BigDecimal saldo;
 	
+	@Column(name = "data_criacao")
+	private Date dataCriacao;
+	
 	@ManyToOne
     @JoinColumn(name = "agencia_id")
     private Agencia agencia;
@@ -43,7 +50,11 @@ public class ContaCorrente implements Serializable{
     private Cliente cliente;
 	
 	@OneToMany(mappedBy = "conta")
-	private List<Operacao> operacoes = new ArrayList<>();
+	private Set<Operacao> operacoes = new HashSet<>();
 	
-	
+	@PrePersist
+    public void prePersist() {
+        final Date atual = new Date();
+        dataCriacao = atual;
+    }
 }

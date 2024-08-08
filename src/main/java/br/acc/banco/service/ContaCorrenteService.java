@@ -152,6 +152,16 @@ public class ContaCorrenteService {
 		operacaoService.salvar(operacao);
 		return contaOrigem;
 	}
+	
+	public List<Operacao> exibirExtrato(Long id){
+		List<Operacao> operacoes = operacaoService.buscarTodos();
+		if(operacoes != null) {
+			return operacoes.stream()
+					.filter(operacao -> operacao.getConta().getId().equals(id))
+					.collect(Collectors.toList());
+		}
+		return operacoes;
+	}
 	public ContaCorrente toContaCorrente(ContaCorrenteCreateDTO dto) {
 		ContaCorrente contaCorrente = new ContaCorrente();
 		BeanUtils.copyProperties(dto, contaCorrente);

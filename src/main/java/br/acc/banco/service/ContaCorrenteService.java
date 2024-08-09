@@ -17,7 +17,6 @@ import br.acc.banco.exception.PixInvalidoException;
 import br.acc.banco.exception.SaqueInvalidoException;
 import br.acc.banco.exception.TransferenciaInvalidaException;
 import br.acc.banco.exception.UsernameUniqueViolationException;
-import br.acc.banco.models.Cliente;
 import br.acc.banco.models.ContaCorrente;
 import br.acc.banco.models.Operacao;
 import br.acc.banco.models.enums.TipoOperacao;
@@ -154,7 +153,7 @@ public class ContaCorrenteService {
 	}
 	
 	public List<Operacao> exibirExtrato(Long id){
-		List<Operacao> operacoes = operacaoService.buscarTodos();
+		List<Operacao> operacoes = operacaoService.buscarTodas();
 		if(operacoes != null) {
 			return operacoes.stream()
 					.filter(operacao -> operacao.getConta().getId().equals(id))

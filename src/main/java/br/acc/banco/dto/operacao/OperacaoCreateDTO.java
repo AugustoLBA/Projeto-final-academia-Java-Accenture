@@ -4,8 +4,14 @@ import java.math.BigDecimal;
 
 import br.acc.banco.models.enums.TipoOperacao;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 @Data
 public class OperacaoCreateDTO {
 	

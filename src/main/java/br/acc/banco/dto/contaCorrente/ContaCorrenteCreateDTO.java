@@ -3,8 +3,12 @@ package br.acc.banco.dto.contaCorrente;
 import java.math.BigDecimal;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class ContaCorrenteCreateDTO {
 

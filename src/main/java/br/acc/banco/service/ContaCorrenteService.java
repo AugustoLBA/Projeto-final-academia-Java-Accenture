@@ -52,10 +52,10 @@ public class ContaCorrenteService {
 	}
 
 	public Operacao sacar(BigDecimal valor, Long id) {
+		ContaCorrente contaCorrente = buscarPorId(id);
 		if(valor.compareTo(BigDecimal.ZERO) <= 0){
 			throw new SaqueInvalidoException("O valor do saque não pode ser menor ou igual a zero !");
 		}
-		ContaCorrente contaCorrente = buscarPorId(id);
 		if(valor.compareTo(contaCorrente.getSaldo()) > 0){
 			throw new SaqueInvalidoException("O valor do saque é maior que o SALDO da conta !");
 		}
@@ -71,10 +71,10 @@ public class ContaCorrenteService {
 	}
 
 	public Operacao deposito(BigDecimal valorDeposito, Long id) {
+		ContaCorrente contaCorrente = buscarPorId(id);
 		if(valorDeposito.compareTo(BigDecimal.ZERO) <= 0){
 			throw new DepositoInvalidoException("O valor do deposito não pode ser menor ou igual a zero !");
 		}
-		ContaCorrente contaCorrente = buscarPorId(id);
 		contaCorrente.setSaldo(contaCorrente.getSaldo().add(valorDeposito));
 
 		Operacao operacao = new Operacao();
@@ -87,15 +87,15 @@ public class ContaCorrenteService {
 	}
 
 	public Operacao transferencia(BigDecimal valorTransferencia, Long idContaOrigem, Long idContaDestino) {
+		ContaCorrente contaOrigem = buscarPorId(idContaOrigem);
+		ContaCorrente contaDestino = buscarPorId(idContaDestino);
 		if(valorTransferencia.compareTo(BigDecimal.ZERO) <= 0){
 			throw new TransferenciaInvalidaException("O valor da transferencia não pode ser menor ou igual a zero !");
 		}
-		ContaCorrente contaOrigem = buscarPorId(idContaOrigem);
 		if(valorTransferencia.compareTo(contaOrigem.getSaldo()) > 0){
 			throw new TransferenciaInvalidaException("O valor da transferencia é maior que o SALDO da conta !");
 		}
 
-		ContaCorrente contaDestino = buscarPorId(idContaDestino);
 		contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valorTransferencia));
 		contaDestino.setSaldo(contaDestino.getSaldo().add(valorTransferencia));
 
@@ -110,10 +110,10 @@ public class ContaCorrenteService {
 	}
 
 	public Operacao compra(BigDecimal valorCompra, Long id, String nomeEstabelecimento) {
+		ContaCorrente contaOrigem = buscarPorId(id);
 		if(valorCompra.compareTo(BigDecimal.ZERO) <= 0){
 			throw new CompraInvalidaException("O valor da compra não pode ser menor ou igual a zero !");
 		}
-		ContaCorrente contaOrigem = buscarPorId(id);
 		if(valorCompra.compareTo(contaOrigem.getSaldo()) > 0){
 			throw new CompraInvalidaException("O valor da compra é maior que o SALDO da conta !");
 		}
@@ -130,10 +130,10 @@ public class ContaCorrenteService {
 	}
 	
 	public Operacao pix(BigDecimal valorPix, Long id,String chavePix) {
+		ContaCorrente contaOrigem = buscarPorId(id);
 		if(valorPix.compareTo(BigDecimal.ZERO) <= 0){
 			throw new PixInvalidoException("O valor do PIX não pode ser menor ou igual a zero !");
 		}
-		ContaCorrente contaOrigem = buscarPorId(id);
 		if(valorPix.compareTo(contaOrigem.getSaldo()) > 0){
 			throw new PixInvalidoException("O valor do PIX é maior que o SALDO da conta !");
 		}

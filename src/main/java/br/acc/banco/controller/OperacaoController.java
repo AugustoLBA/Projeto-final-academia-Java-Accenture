@@ -29,11 +29,6 @@ public class OperacaoController {
 	
 	private final OperacaoMapper mapper;
 	
-	@PostMapping
-    public ResponseEntity<OperacaoResponseDTO> save(@Valid @RequestBody OperacaoCreateDTO createDTO) {
-        Operacao operacao = operacaoService.salvar(mapper.toOperacao(createDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(operacao));
-    }
 	
 	@GetMapping("/{id}")
     public ResponseEntity<OperacaoResponseDTO> findById(@PathVariable Long id) {

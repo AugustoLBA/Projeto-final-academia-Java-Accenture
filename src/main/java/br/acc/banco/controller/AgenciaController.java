@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.acc.banco.dto.AgenciaCreateDTO;
-import br.acc.banco.dto.AgenciaResponseDTO;
+import br.acc.banco.dto.agencia.AgenciaCreateDTO;
+import br.acc.banco.dto.agencia.AgenciaResponseDTO;
 import br.acc.banco.mapper.AgenciaMapper;
 import br.acc.banco.models.Agencia;
 import br.acc.banco.service.AgenciaService;

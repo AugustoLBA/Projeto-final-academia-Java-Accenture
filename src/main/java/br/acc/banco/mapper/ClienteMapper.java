@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import br.acc.banco.dto.ClienteCreateDTO;
-import br.acc.banco.dto.ClienteResponseDTO;
+import br.acc.banco.dto.cliente.ClienteCreateDTO;
+import br.acc.banco.dto.cliente.ClienteResponseDTO;
 import br.acc.banco.models.Cliente;
 
 @Component

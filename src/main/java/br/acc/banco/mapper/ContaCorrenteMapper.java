@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import br.acc.banco.dto.ContaCorrenteCreateDTO;
-import br.acc.banco.dto.ContaCorrenteResponseDTO;
+import br.acc.banco.dto.contaCorrente.ContaCorrenteCreateDTO;
+import br.acc.banco.dto.contaCorrente.ContaCorrenteResponseDTO;
 import br.acc.banco.models.ContaCorrente;
 import br.acc.banco.service.AgenciaService;
 import br.acc.banco.service.ClienteService;

@@ -1,8 +1,7 @@
-package br.acc.banco.dto;
+package br.acc.banco.dto.cliente;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 @Data
 public class ClienteResponseDTO {

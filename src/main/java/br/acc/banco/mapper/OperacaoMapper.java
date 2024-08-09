@@ -6,11 +6,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import br.acc.banco.dto.CompraResponseDTO;
-import br.acc.banco.dto.OperacaoCreateDTO;
-import br.acc.banco.dto.OperacaoResponseDTO;
-import br.acc.banco.dto.PixResponseDTO;
-import br.acc.banco.dto.TransferenciaResponseDTO;
+import br.acc.banco.dto.operacao.CompraCreateDTO;
+import br.acc.banco.dto.operacao.CompraResponseDTO;
+import br.acc.banco.dto.operacao.OperacaoCreateDTO;
+import br.acc.banco.dto.operacao.OperacaoResponseDTO;
+import br.acc.banco.dto.operacao.PixCreateDTO;
+import br.acc.banco.dto.operacao.PixResponseDTO;
+import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
+import br.acc.banco.dto.operacao.TransferenciaResponseDTO;
 import br.acc.banco.models.Operacao;
 import br.acc.banco.models.enums.TipoOperacao;
 import br.acc.banco.service.ContaCorrenteService;
@@ -24,6 +27,29 @@ public class OperacaoMapper {
 	
 	public Operacao toOperacao(OperacaoCreateDTO dto) {
 		Operacao operacao = new Operacao();
+		
+		if(dto.getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
+			TransferenciaCreateDTO transferencia = (TransferenciaCreateDTO) dto;
+			BeanUtils.copyProperties(transferencia, operacao);
+			operacao.setConta(contaCorrenteService.buscarPorId(transferencia.getContaCorrenteId()));
+			operacao.setContaDestino(contaCorrenteService.buscarPorId(transferencia.getContaCorrenteDestinoId()));
+			return operacao;
+		}
+		if(dto.getTipo().equals(TipoOperacao.PIX)) {
+			PixCreateDTO pix = (PixCreateDTO) dto;
+			BeanUtils.copyProperties(pix, operacao);
+			operacao.setConta(contaCorrenteService.buscarPorId(pix.getContaCorrenteId()));
+			operacao.setChavePix(pix.getChavePix());
+			return operacao;
+		}
+		if(dto.getTipo().equals(TipoOperacao.COMPRA)) {
+			CompraCreateDTO compra = (CompraCreateDTO) dto;
+			BeanUtils.copyProperties(compra, operacao);
+			operacao.setConta(contaCorrenteService.buscarPorId(compra.getContaCorrenteId()));
+			operacao.setNomeEstabelecimento(compra.getNomeEstabelecimento());
+			return operacao;
+		}
+		
 		BeanUtils.copyProperties(dto, operacao);
 		operacao.setConta(contaCorrenteService.buscarPorId(dto.getContaCorrenteId()));
 		return operacao;

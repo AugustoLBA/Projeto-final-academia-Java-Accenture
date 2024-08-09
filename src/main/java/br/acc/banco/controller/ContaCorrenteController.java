@@ -1,6 +1,5 @@
 package br.acc.banco.controller;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -13,9 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.acc.banco.dto.ContaCorrenteCreateDTO;
-import br.acc.banco.dto.ContaCorrenteResponseDTO;
-import br.acc.banco.dto.OperacaoResponseDTO;
+import br.acc.banco.dto.contaCorrente.ContaCorrenteCreateDTO;
+import br.acc.banco.dto.contaCorrente.ContaCorrenteResponseDTO;
+import br.acc.banco.dto.operacao.CompraCreateDTO;
+import br.acc.banco.dto.operacao.OperacaoCreateDTO;
+import br.acc.banco.dto.operacao.OperacaoResponseDTO;
+import br.acc.banco.dto.operacao.PixCreateDTO;
+import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
 import br.acc.banco.mapper.ContaCorrenteMapper;
 import br.acc.banco.mapper.OperacaoMapper;
 import br.acc.banco.models.ContaCorrente;
@@ -59,34 +62,34 @@ public class ContaCorrenteController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/deposito/{id}/{valorDeposito}")
-    public ResponseEntity<OperacaoResponseDTO> deposito(@PathVariable Long id, @PathVariable BigDecimal valorDeposito) {
-    	Operacao operacao = contaCorrenteService.deposito(valorDeposito, id);
+    @PostMapping("/deposito")
+    public ResponseEntity<OperacaoResponseDTO> deposito(@Valid @RequestBody OperacaoCreateDTO createDTO) {
+    	Operacao operacao = contaCorrenteService.deposito(createDTO.getValor(), createDTO.getContaCorrenteId());
         return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PostMapping("/saque/{id}/{valorSaque}")
-    public ResponseEntity<OperacaoResponseDTO> sacar(@PathVariable Long id, @PathVariable BigDecimal valorSaque) {
+    @PostMapping("/saque")
+    public ResponseEntity<OperacaoResponseDTO> sacar(@Valid @RequestBody OperacaoCreateDTO createDTO) {
         
-    	Operacao operacao = contaCorrenteService.sacar(valorSaque, id);
+    	Operacao operacao = contaCorrenteService.sacar(createDTO.getValor(), createDTO.getContaCorrenteId());
         return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PostMapping("/transferencia/{idOrigem}/{idDestino}/{valorTransferencia}")
-    public ResponseEntity<OperacaoResponseDTO> transferencia(@PathVariable Long idOrigem, @PathVariable Long idDestino, @PathVariable BigDecimal valorTransferencia) {
-    	Operacao operacao = contaCorrenteService.transferencia(valorTransferencia, idOrigem, idDestino);
+    @PostMapping("/transferencia")
+    public ResponseEntity<OperacaoResponseDTO> transferencia(@Valid @RequestBody TransferenciaCreateDTO createDTO) {
+    	Operacao operacao = contaCorrenteService.transferencia(createDTO.getValor(), createDTO.getContaCorrenteId(), createDTO.getContaCorrenteDestinoId());
         return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PostMapping("/compra/{id}/{valorCompra}/{nomeEstabelecimento}")
-    public ResponseEntity<OperacaoResponseDTO> compra(@PathVariable Long id, @PathVariable BigDecimal valorCompra, @PathVariable String nomeEstabelecimento) {
-    	Operacao operacao = contaCorrenteService.compra(valorCompra, id, nomeEstabelecimento);
+    @PostMapping("/compra")
+    public ResponseEntity<OperacaoResponseDTO> compra(@Valid @RequestBody CompraCreateDTO createDTO) {
+    	Operacao operacao = contaCorrenteService.compra(createDTO.getValor(), createDTO.getContaCorrenteId(), createDTO.getNomeEstabelecimento());
         return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PostMapping("/pix/{id}/{valorPix}/{chavePix}")
-    public ResponseEntity<OperacaoResponseDTO> pix(@PathVariable Long id, @PathVariable BigDecimal valorPix, @PathVariable String chavePix) {
-    	Operacao operacao = contaCorrenteService.pix(valorPix, id, chavePix);
+    @PostMapping("/pix")
+    public ResponseEntity<OperacaoResponseDTO> pix(@Valid @RequestBody PixCreateDTO createDTO) {
+    	Operacao operacao = contaCorrenteService.pix(createDTO.getValor(), createDTO.getContaCorrenteId(), createDTO.getChavePix());
         return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
     @GetMapping("/extrato/{id}")

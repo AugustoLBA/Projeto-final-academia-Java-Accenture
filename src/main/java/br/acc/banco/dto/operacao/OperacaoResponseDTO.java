@@ -1,4 +1,4 @@
-package br.acc.banco.dto;
+package br.acc.banco.dto.operacao;
 
 import java.math.BigDecimal;
 import java.util.Date;

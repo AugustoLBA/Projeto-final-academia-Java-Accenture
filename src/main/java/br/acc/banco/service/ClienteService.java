@@ -17,13 +17,23 @@ public class ClienteService {
 	private final ClienteRepository clienteRepository;
 
 	public Cliente salvar(Cliente cliente) {
-		try {
-			return clienteRepository.save(cliente);
-		}catch(DataIntegrityViolationException e) {
-			throw new UsernameUniqueViolationException("Cliente com CPF: "+cliente.getCpf()
-			+" já cadastrado!");
-		}
+	    try {
+	        return clienteRepository.save(cliente);
+	    } catch (DataIntegrityViolationException e) {
+	        String message;
+	        
+	        if (e.getMessage().contains("CPF")) {
+	            message = "Cliente com CPF: " + cliente.getCpf() + " já cadastrado ou CPF inválido!";
+	        } else if (e.getMessage().contains("telefone")) {
+	            message = "Cliente com telefone: " + cliente.getTelefone() + " já cadastrado ou telefone inválido!";
+	        } else {
+	            message = "Erro ao salvar cliente: " + e.getMessage();
+	        }
+	        
+	        throw new UsernameUniqueViolationException(message);
+	    }
 	}
+
 	public Cliente buscarPorId(Long id) {
 		return clienteRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Cliente com " + id + " não encontrado!"));

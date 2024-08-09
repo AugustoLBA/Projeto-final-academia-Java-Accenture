@@ -1,4 +1,4 @@
-package br.acc.banco.dto;
+package br.acc.banco.dto.contaCorrente;
 
 import java.math.BigDecimal;
 

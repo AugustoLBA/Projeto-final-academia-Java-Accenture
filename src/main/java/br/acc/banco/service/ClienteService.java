@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 
 import br.acc.banco.dto.ClienteCreateDTO;
 import br.acc.banco.dto.ClienteResponseDTO;
+import br.acc.banco.exception.EntityNotFoundException;
 import br.acc.banco.models.Cliente;
+import br.acc.banco.models.Operacao;
 import br.acc.banco.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +18,11 @@ public class ClienteService {
 
 	private final ClienteRepository clienteRepository;
 	
+	
+	public Cliente buscarPorId(Long id) {
+		return clienteRepository.findById(id).orElseThrow(
+				()-> new EntityNotFoundException("Cliente com "+id+" não encontrado!"));		
+	}
 	
 	public Cliente salvar(Cliente cliente) {
 		return clienteRepository.save(cliente);

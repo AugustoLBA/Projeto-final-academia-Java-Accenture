@@ -18,7 +18,6 @@ import br.acc.banco.models.ContaCorrente;
 import br.acc.banco.models.Operacao;
 import br.acc.banco.models.enums.TipoOperacao;
 import br.acc.banco.repository.ContaCorrenteRepository;
-import br.acc.banco.repository.OperacaoRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor // Injeção de depêndencia via lombok
@@ -27,7 +26,6 @@ public class ContaCorrenteService {
 
 	private final ContaCorrenteRepository contaCorrenteRepository;
 	private final OperacaoService operacaoService;
-	private final OperacaoRepository operacaoRepository;
 
 
 	public ContaCorrente salvar(ContaCorrente contaCorrente) {
@@ -149,15 +147,17 @@ public class ContaCorrenteService {
 		operacaoService.salvar(operacao);
 		return contaOrigem;
 	}
-	public List<Operacao> exibirExtrato(Long contaId) {
-        List<Operacao> todasOperacoes = operacaoRepository.findAll();
-        return todasOperacoes.stream()
-                             .filter(operacao -> operacao.getConta() != null && operacao.getConta().getId().equals(contaId))
-                             .collect(Collectors.toList());
-    }
 	
 	
-
+	public List<Operacao> exibirExtrato(Long id){
+		List<Operacao> operacoes = operacaoService.buscarTodas();
+		if(operacoes != null) {
+			return operacoes.stream()
+					.filter(operacao -> operacao.getConta().getId().equals(id))
+					.collect(Collectors.toList());
+	}
+	return operacoes;
+	}
 	
 
 }

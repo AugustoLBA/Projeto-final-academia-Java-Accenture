@@ -83,6 +83,6 @@ public class ContaCorrenteController {
     @GetMapping("/extrato/{id}")
     public ResponseEntity<List<OperacaoResponseDTO>> exibirExtrato(@PathVariable Long id) {
         List<OperacaoResponseDTO> operacoes = operacaoMapper.toListDto(contaCorrenteService.exibirExtrato(id));
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(operacoes);
+        return ResponseEntity.status(HttpStatus.OK).body(operacoes);
     }
 }

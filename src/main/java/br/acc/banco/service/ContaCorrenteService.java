@@ -51,7 +51,7 @@ public class ContaCorrenteService {
 		contaCorrenteRepository.delete(contaCorrente);
 	}
 
-	public ContaCorrente sacar(BigDecimal valor, Long id) {
+	public Operacao sacar(BigDecimal valor, Long id) {
 		if(valor.compareTo(BigDecimal.ZERO) <= 0){
 			throw new SaqueInvalidoException("O valor do saque não pode ser menor ou igual a zero !");
 		}
@@ -67,10 +67,10 @@ public class ContaCorrenteService {
 		operacao.setValor(valor);
 
 		operacaoService.salvar(operacao);
-		return contaCorrente;
+		return operacao;
 	}
 
-	public ContaCorrente deposito(BigDecimal valorDeposito, Long id) {
+	public Operacao deposito(BigDecimal valorDeposito, Long id) {
 		if(valorDeposito.compareTo(BigDecimal.ZERO) <= 0){
 			throw new DepositoInvalidoException("O valor do deposito não pode ser menor ou igual a zero !");
 		}
@@ -83,10 +83,10 @@ public class ContaCorrenteService {
 		operacao.setConta(contaCorrente);
 		operacaoService.salvar(operacao);
 
-		return contaCorrente;
+		return operacao;
 	}
 
-	public ContaCorrente transferencia(BigDecimal valorTransferencia, Long idContaOrigem, Long idContaDestino) {
+	public Operacao transferencia(BigDecimal valorTransferencia, Long idContaOrigem, Long idContaDestino) {
 		if(valorTransferencia.compareTo(BigDecimal.ZERO) <= 0){
 			throw new TransferenciaInvalidaException("O valor da transferencia não pode ser menor ou igual a zero !");
 		}
@@ -106,10 +106,10 @@ public class ContaCorrenteService {
 		operacao.setContaDestino(contaDestino);
 		operacaoService.salvar(operacao);
 
-		return contaOrigem;
+		return operacao;
 	}
 
-	public ContaCorrente compra(BigDecimal valorCompra, Long id, String nomeEstabelecimento) {
+	public Operacao compra(BigDecimal valorCompra, Long id, String nomeEstabelecimento) {
 		if(valorCompra.compareTo(BigDecimal.ZERO) <= 0){
 			throw new CompraInvalidaException("O valor da compra não pode ser menor ou igual a zero !");
 		}
@@ -122,13 +122,14 @@ public class ContaCorrenteService {
 		Operacao operacao = new Operacao();
 		operacao.setConta(contaOrigem);
 		operacao.setTipo(TipoOperacao.COMPRA);
+		operacao.setValor(valorCompra);
 		operacao.setNomeEstabelecimento(nomeEstabelecimento);
 		
 		operacaoService.salvar(operacao);
-		return contaOrigem;
+		return operacao;
 	}
 	
-	public ContaCorrente pix(BigDecimal valorPix, Long id,String chavePix) {
+	public Operacao pix(BigDecimal valorPix, Long id,String chavePix) {
 		if(valorPix.compareTo(BigDecimal.ZERO) <= 0){
 			throw new PixInvalidoException("O valor do PIX não pode ser menor ou igual a zero !");
 		}
@@ -143,9 +144,10 @@ public class ContaCorrenteService {
 		operacao.setConta(contaOrigem);
 		operacao.setTipo(TipoOperacao.PIX);
 		operacao.setChavePix(chavePix);
+		operacao.setValor(valorPix);
 		
 		operacaoService.salvar(operacao);
-		return contaOrigem;
+		return operacao;
 	}
 	
 	

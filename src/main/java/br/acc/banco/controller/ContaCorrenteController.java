@@ -1,20 +1,28 @@
 package br.acc.banco.controller;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import br.acc.banco.dto.ContaCorrenteCreateDTO;
 import br.acc.banco.dto.ContaCorrenteResponseDTO;
 import br.acc.banco.dto.OperacaoResponseDTO;
 import br.acc.banco.mapper.ContaCorrenteMapper;
 import br.acc.banco.mapper.OperacaoMapper;
 import br.acc.banco.models.ContaCorrente;
+import br.acc.banco.models.Operacao;
 import br.acc.banco.service.ContaCorrenteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -51,34 +59,35 @@ public class ContaCorrenteController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PatchMapping("/deposito/{id}/{valorDeposito}")
-    public ResponseEntity<ContaCorrenteResponseDTO> deposito(@PathVariable Long id, @PathVariable BigDecimal valorDeposito) {
-        ContaCorrente contaCorrente = contaCorrenteService.deposito(valorDeposito, id);
-        return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(contaCorrente));
+    @PostMapping("/deposito/{id}/{valorDeposito}")
+    public ResponseEntity<OperacaoResponseDTO> deposito(@PathVariable Long id, @PathVariable BigDecimal valorDeposito) {
+    	Operacao operacao = contaCorrenteService.deposito(valorDeposito, id);
+        return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PatchMapping("/saque/{id}/{valorSaque}")
-    public ResponseEntity<ContaCorrenteResponseDTO> sacar(@PathVariable Long id, @PathVariable BigDecimal valorSaque) {
-        ContaCorrente contaCorrente = contaCorrenteService.sacar(valorSaque, id);
-        return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(contaCorrente));
+    @PostMapping("/saque/{id}/{valorSaque}")
+    public ResponseEntity<OperacaoResponseDTO> sacar(@PathVariable Long id, @PathVariable BigDecimal valorSaque) {
+        
+    	Operacao operacao = contaCorrenteService.sacar(valorSaque, id);
+        return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PatchMapping("/transferencia/{idOrigem}/{idDestino}/{valorTransferencia}")
-    public ResponseEntity<ContaCorrenteResponseDTO> transferencia(@PathVariable Long idOrigem, @PathVariable Long idDestino, @PathVariable BigDecimal valorTransferencia) {
-        ContaCorrente contaCorrente = contaCorrenteService.transferencia(valorTransferencia, idOrigem, idDestino);
-        return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(contaCorrente));
+    @PostMapping("/transferencia/{idOrigem}/{idDestino}/{valorTransferencia}")
+    public ResponseEntity<OperacaoResponseDTO> transferencia(@PathVariable Long idOrigem, @PathVariable Long idDestino, @PathVariable BigDecimal valorTransferencia) {
+    	Operacao operacao = contaCorrenteService.transferencia(valorTransferencia, idOrigem, idDestino);
+        return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PatchMapping("/compra/{id}/{valorCompra}/{nomeEstabelecimento}")
-    public ResponseEntity<ContaCorrenteResponseDTO> compra(@PathVariable Long id, @PathVariable BigDecimal valorCompra, @PathVariable String nomeEstabelecimento) {
-        ContaCorrente contaCorrente = contaCorrenteService.compra(valorCompra, id, nomeEstabelecimento);
-        return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(contaCorrente));
+    @PostMapping("/compra/{id}/{valorCompra}/{nomeEstabelecimento}")
+    public ResponseEntity<OperacaoResponseDTO> compra(@PathVariable Long id, @PathVariable BigDecimal valorCompra, @PathVariable String nomeEstabelecimento) {
+    	Operacao operacao = contaCorrenteService.compra(valorCompra, id, nomeEstabelecimento);
+        return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
-    @PatchMapping("/pix/{id}/{valorPix}/{chavePix}")
-    public ResponseEntity<ContaCorrenteResponseDTO> pix(@PathVariable Long id, @PathVariable BigDecimal valorPix, @PathVariable String chavePix) {
-        ContaCorrente contaCorrente = contaCorrenteService.pix(valorPix, id, chavePix);
-        return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(contaCorrente));
+    @PostMapping("/pix/{id}/{valorPix}/{chavePix}")
+    public ResponseEntity<OperacaoResponseDTO> pix(@PathVariable Long id, @PathVariable BigDecimal valorPix, @PathVariable String chavePix) {
+    	Operacao operacao = contaCorrenteService.pix(valorPix, id, chavePix);
+        return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
     @GetMapping("/extrato/{id}")
     public ResponseEntity<List<OperacaoResponseDTO>> exibirExtrato(@PathVariable Long id) {

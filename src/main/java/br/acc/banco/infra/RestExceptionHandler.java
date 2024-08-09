@@ -1,4 +1,4 @@
-package infra;
+package br.acc.banco.infra;
 
 import java.util.HashMap;
 import java.util.Map;

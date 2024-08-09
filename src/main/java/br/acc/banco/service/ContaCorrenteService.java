@@ -1,15 +1,13 @@
 package br.acc.banco.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import br.acc.banco.dto.ContaCorrenteCreateDTO;
-import br.acc.banco.dto.ContaCorrenteResponseDTO;
 import br.acc.banco.exception.CompraInvalidaException;
 import br.acc.banco.exception.DepositoInvalidoException;
 import br.acc.banco.exception.EntityNotFoundException;
@@ -28,8 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class ContaCorrenteService {
 
 	private final ContaCorrenteRepository contaCorrenteRepository;
-	private final AgenciaService agenciaService;
-	private final ClienteService clienteService;
 	private final OperacaoService operacaoService;
 
 
@@ -105,6 +101,7 @@ public class ContaCorrenteService {
 		contaDestino.setSaldo(contaDestino.getSaldo().add(valorTransferencia));
 
 		Operacao operacao = new Operacao();
+		operacao.setTipo(TipoOperacao.TRANSFERENCIA);
 		operacao.setValor(valorTransferencia);
 		operacao.setConta(contaOrigem);
 		operacao.setContaDestino(contaDestino);
@@ -152,33 +149,28 @@ public class ContaCorrenteService {
 		return contaOrigem;
 	}
 	
-	public List<Operacao> exibirExtrato(Long id){
-		List<Operacao> operacoes = operacaoService.buscarTodas();
-		if(operacoes != null) {
-			return operacoes.stream()
-					.filter(operacao -> operacao.getConta().getId().equals(id))
-					.collect(Collectors.toList());
-		}
-		return operacoes;
-	}
-	public ContaCorrente toContaCorrente(ContaCorrenteCreateDTO dto) {
-		ContaCorrente contaCorrente = new ContaCorrente();
-		BeanUtils.copyProperties(dto, contaCorrente);
-		contaCorrente.setAgencia(agenciaService.buscarPorId(dto.getAgenciaId()));
-		contaCorrente.setCliente(clienteService.buscarPorId(dto.getClienteId()));
-		return contaCorrente;
-	}
+//	public List<Operacao> exibirExtrato(Long id){
+//		List<Operacao> operacoes = operacaoService.buscarTodas();
+//		if(operacoes != null) {
+//			return operacoes.stream()
+//					.filter(operacao -> operacao.getConta().getId().equals(id))
+//					.collect(Collectors.toList());
+//		}
+//		return operacoes;
+//	}
+	public List<Operacao> exibirExtrato(Long id) {
+	    List<Operacao> operacoes = operacaoService.buscarTodas();
+	    List<Operacao> filtradas = new ArrayList<>();
 
-	public ContaCorrenteResponseDTO toDto(ContaCorrente contaCorrente) {
-		ContaCorrenteResponseDTO responseDTO = new ContaCorrenteResponseDTO();
-		BeanUtils.copyProperties(contaCorrente, responseDTO);
-		responseDTO.setAgenciaId(contaCorrente.getAgencia().getId());
-		responseDTO.setClienteId(contaCorrente.getCliente().getId());
-		return responseDTO;
-	}
+	    if (operacoes != null) {
+	        for (Operacao operacao : operacoes) {
+	            if (operacao.getConta() != null && operacao.getConta().getId().equals(id)) {
+	                filtradas.add(operacao);
+	            }
+	        }
+	    }
 
-	public List<ContaCorrenteResponseDTO> toListDto(List<ContaCorrente> contas){
-		return contas.stream().map(responseDto -> toDto(responseDto)).collect(Collectors.toList());
+	    return filtradas;
 	}
 
 }

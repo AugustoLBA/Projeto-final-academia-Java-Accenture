@@ -1,6 +1,7 @@
 package br.acc.banco.dto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,9 +19,9 @@ public class ContaCorrenteResponseDTO {
 
 	    private BigDecimal saldo;
 
-	    private String senha;
-
 	    private Long agenciaId;
 
 	    private Long clienteId;
+	    
+	    private Date dataCriacao;
 }

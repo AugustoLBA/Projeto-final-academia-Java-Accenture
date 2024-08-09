@@ -1,14 +1,11 @@
 package br.acc.banco.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
-import br.acc.banco.dto.AgenciaCreateDTO;
-import br.acc.banco.dto.AgenciaResponseDTO;
 import br.acc.banco.exception.EntityNotFoundException;
+import br.acc.banco.exception.UsernameUniqueViolationException;
 import br.acc.banco.models.Agencia;
 import br.acc.banco.repository.AgenciaRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +17,12 @@ public class AgenciaService {
 	private final AgenciaRepository agenciaRepository;
 	
 	public Agencia salvar(Agencia agencia) {
+		try {
 		return agenciaRepository.save(agencia);
+		}catch(DataIntegrityViolationException e) {
+			throw new UsernameUniqueViolationException("Agencia com nome: "+agencia.getNome()
+			+" já cadastrado!");
+		}
 	}
 	
 	public Agencia buscarPorId(Long id) {
@@ -37,19 +39,4 @@ public class AgenciaService {
 		agenciaRepository.delete(agencia);
 	}
 	
-	public Agencia toAgencia(AgenciaCreateDTO createDTO) {
-		Agencia agencia = new Agencia();
-		BeanUtils.copyProperties(createDTO, agencia);
-		return agencia;
-	}
-	
-	public AgenciaResponseDTO toDto(Agencia agencia) {
-		AgenciaResponseDTO responseDTO = new AgenciaResponseDTO();
-		BeanUtils.copyProperties(agencia, responseDTO);
-		return responseDTO;
-	}
-	
-	public List<AgenciaResponseDTO> toListDto(List<Agencia> agencias){
-		return agencias.stream().map(agencia -> toDto(agencia)).collect(Collectors.toList());
-	}
 }

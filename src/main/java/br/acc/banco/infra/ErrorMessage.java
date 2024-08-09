@@ -1,7 +1,6 @@
-package infra;
+package br.acc.banco.infra;
 
 import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 
 import lombok.AllArgsConstructor;

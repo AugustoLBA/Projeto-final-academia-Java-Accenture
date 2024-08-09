@@ -25,13 +25,13 @@ public class Agencia implements Serializable{
     @Column(name = "id")
 	private Long id;
 	
-	@Column(name = "nome", nullable = false,length = 100)
+	@Column(name = "nome", nullable = false,length = 100, unique = true)
 	private String nome;
 	
-	@Column(name = "telefone", nullable = false,length = 11)
+	@Column(name = "telefone", nullable = false,length = 11, unique = true)
 	private String telefone;
 	
-	@Column(name = "endereco")
+	@Column(name = "endereco", unique = true)
 	private String endereco;
 	
 	@OneToMany(mappedBy = "agencia")

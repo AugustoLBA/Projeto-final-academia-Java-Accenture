@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.acc.banco.dto.OperacaoCreateDTO;
 import br.acc.banco.dto.OperacaoResponseDTO;
+import br.acc.banco.mapper.OperacaoMapper;
 import br.acc.banco.models.Operacao;
 import br.acc.banco.service.OperacaoService;
 import jakarta.validation.Valid;
@@ -26,22 +27,24 @@ public class OperacaoController {
 
 	private final OperacaoService operacaoService;
 	
+	private final OperacaoMapper mapper;
+	
 	@PostMapping
     public ResponseEntity<OperacaoResponseDTO> save(@Valid @RequestBody OperacaoCreateDTO createDTO) {
-        Operacao operacao = operacaoService.salvar(operacaoService.toOperacao(createDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(operacaoService.toDto(operacao));
+        Operacao operacao = operacaoService.salvar(mapper.toOperacao(createDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(operacao));
     }
 	
 	@GetMapping("/{id}")
     public ResponseEntity<OperacaoResponseDTO> findById(@PathVariable Long id) {
         Operacao operacao = operacaoService.buscarPorId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(operacaoService.toDto(operacao));
+        return ResponseEntity.status(HttpStatus.OK).body(mapper.toDto(operacao));
     }
 	
 	@GetMapping
     public ResponseEntity<List<OperacaoResponseDTO>> findAll() {
         List<Operacao> operacoes = operacaoService.buscarTodas();
-        return ResponseEntity.status(HttpStatus.OK).body(operacaoService.toListDto(operacoes));
+        return ResponseEntity.status(HttpStatus.OK).body(mapper.toListDto(operacoes));
     }
 	
 	@DeleteMapping("/{id}")

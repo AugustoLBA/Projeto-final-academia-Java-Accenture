@@ -9,7 +9,7 @@ public class AgenciaResponseDTO {
 
 	  private String nome;
 
-	  private int numero;
-
 	  private String telefone;
+	  
+	  private String endereco;
 }

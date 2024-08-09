@@ -3,6 +3,8 @@ package br.acc.banco.models;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +28,7 @@ public class Cliente implements Serializable{
 
 	@Column(name = "nome", nullable = false, length = 100)
 	private String nome;
-
+	
 	@Column(name = "cpf", nullable = false, unique = true, length = 11)
 	private String cpf;
 

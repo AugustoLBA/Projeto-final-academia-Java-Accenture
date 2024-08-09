@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.acc.banco.dto.ClienteCreateDTO;
 import br.acc.banco.dto.ClienteResponseDTO;
+import br.acc.banco.mapper.ClienteMapper;
 import br.acc.banco.models.Cliente;
 import br.acc.banco.service.ClienteService;
 import jakarta.validation.Valid;
@@ -26,22 +27,24 @@ public class ClienteController {
 	
 	private final ClienteService clienteService;
 	
+	private final ClienteMapper clienteMapper;
+	
 	@PostMapping
 	public ResponseEntity<ClienteResponseDTO> save(@RequestBody @Valid ClienteCreateDTO createDTO){
-		Cliente cliente = clienteService.salvar(clienteService.toCliente(createDTO));
-		return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.toDto(cliente));
+		Cliente cliente = clienteService.salvar(clienteMapper.toCliente(createDTO));
+		return ResponseEntity.status(HttpStatus.CREATED).body(clienteMapper.toDto(cliente));
 	}
 	
 	@GetMapping
 	public ResponseEntity<List<ClienteResponseDTO>> findAll(){
 		List<Cliente> clientes = clienteService.buscarTodos();
-		return ResponseEntity.status(HttpStatus.OK).body(clienteService.toListDto(clientes));
+		return ResponseEntity.status(HttpStatus.OK).body(clienteMapper.toListDto(clientes));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<ClienteResponseDTO> findById(@PathVariable Long id){
 		Cliente cliente = clienteService.buscarPorId(id);
-		return ResponseEntity.status(HttpStatus.OK).body(clienteService.toDto(cliente));
+		return ResponseEntity.status(HttpStatus.OK).body(clienteMapper.toDto(cliente));
 	}
 	
 	@DeleteMapping("/{id}")

@@ -10,7 +10,9 @@ import br.acc.banco.exception.PixInvalidoException;
 import br.acc.banco.exception.SaqueInvalidoException;
 import br.acc.banco.exception.TransferenciaInvalidaException;
 import br.acc.banco.exception.UsernameUniqueViolationException;
+import io.swagger.v3.oas.annotations.Hidden;
 
+@Hidden
 @RestController
 public class ExceptionTriggerController {
 

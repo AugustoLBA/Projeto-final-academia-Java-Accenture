@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.acc.banco.dto.cliente.ClienteCreateDTO;
 import br.acc.banco.dto.cliente.ClienteResponseDTO;
 import br.acc.banco.exception.EntityNotFoundException;
+import br.acc.banco.exception.UsernameUniqueViolationException;
 import br.acc.banco.mapper.ClienteMapper;
 import br.acc.banco.models.Cliente;
 import br.acc.banco.service.ClienteService;
@@ -59,6 +60,8 @@ public class ClienteControllerTest {
         clienteResponseDTO = new ClienteResponseDTO(1L, "João Silva", "12345678901", "11987654321", BigDecimal.valueOf(1000));
         clienteCreateDTO = new ClienteCreateDTO("João Silva", "12345678901", "11987654321", BigDecimal.valueOf(1000));
     }
+    
+
 
     @Test
     public void testSaveClienteComSucesso() throws Exception {

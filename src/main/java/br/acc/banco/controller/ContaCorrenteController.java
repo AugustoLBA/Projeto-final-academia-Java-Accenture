@@ -14,14 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.acc.banco.dto.contaCorrente.ContaCorrenteCreateDTO;
 import br.acc.banco.dto.contaCorrente.ContaCorrenteResponseDTO;
+import br.acc.banco.dto.emprestimo.EmprestimoCreateDTO;
+import br.acc.banco.dto.emprestimo.EmprestimoResponseDTO;
+import br.acc.banco.dto.emprestimo.ParcelaEmprestimoDTO;
 import br.acc.banco.dto.operacao.CompraCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoResponseDTO;
 import br.acc.banco.dto.operacao.PixCreateDTO;
 import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
 import br.acc.banco.mapper.ContaCorrenteMapper;
+import br.acc.banco.mapper.EmprestimoMapper;
 import br.acc.banco.mapper.OperacaoMapper;
 import br.acc.banco.models.ContaCorrente;
+import br.acc.banco.models.Emprestimo;
 import br.acc.banco.models.Operacao;
 import br.acc.banco.service.ContaCorrenteService;
 import jakarta.validation.Valid;
@@ -37,6 +42,8 @@ public class ContaCorrenteController {
     private final ContaCorrenteMapper contaCorrenteMapper;
     
     private final OperacaoMapper operacaoMapper;
+    
+    private final EmprestimoMapper emprestimoMapper;
 
     @PostMapping
     public ResponseEntity<ContaCorrenteResponseDTO> save(@Valid @RequestBody ContaCorrenteCreateDTO createDTO) {
@@ -97,4 +104,23 @@ public class ContaCorrenteController {
         List<OperacaoResponseDTO> operacoes = operacaoMapper.toListDto(contaCorrenteService.exibirExtrato(id));
         return ResponseEntity.status(HttpStatus.OK).body(operacoes);
     }
+    
+    @PostMapping("/emprestimo/solicitar")
+    public ResponseEntity<EmprestimoResponseDTO> solicitarEmprestimo(@Valid @RequestBody EmprestimoCreateDTO createDTO) {
+        Emprestimo emprestimo = contaCorrenteService.solicitarEmprestimo(
+        		createDTO.getContaCorrenteId(),
+        		createDTO.getValor(),
+        		createDTO.getQuantidadeParcelas());
+        return ResponseEntity.status(HttpStatus.OK).body(emprestimoMapper.toDto(emprestimo));
+    }
+    
+    @PostMapping("/emprestimo/pagar/parcela")
+    public ResponseEntity<EmprestimoResponseDTO> pagarParcelaEmprestimo(@Valid @RequestBody ParcelaEmprestimoDTO dto){
+    	Emprestimo emprestimo = contaCorrenteService.pagarParcelaEmprestimo(
+    			dto.getContaCorrenteId(), 
+    			dto.getEmprestimoId(),
+    			dto.getValor());
+    	return ResponseEntity.status(HttpStatus.OK).body(emprestimoMapper.toDto(emprestimo));
+    }
+    
 }

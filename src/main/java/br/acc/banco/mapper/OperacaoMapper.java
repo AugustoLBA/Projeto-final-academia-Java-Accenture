@@ -10,6 +10,7 @@ import br.acc.banco.dto.operacao.CompraCreateDTO;
 import br.acc.banco.dto.operacao.CompraResponseDTO;
 import br.acc.banco.dto.operacao.OperacaoCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoResponseDTO;
+import br.acc.banco.dto.operacao.ParcelaEmprestimoDTO;
 import br.acc.banco.dto.operacao.PixCreateDTO;
 import br.acc.banco.dto.operacao.PixResponseDTO;
 import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
@@ -77,6 +78,16 @@ public class OperacaoMapper {
 			dto.setContaCorrenteId(operacao.getConta().getId());
 			dto.setNomeEstabelecimento(operacao.getNomeEstabelecimento());
 			return dto;
+		}
+		if(operacao.getTipo().equals(TipoOperacao.PARCELAEMPRESTIMO)) {
+			ParcelaEmprestimoDTO parcelaEmprestimo = new ParcelaEmprestimoDTO();
+			parcelaEmprestimo.setId(operacao.getId());
+			parcelaEmprestimo.setDataRealizada(operacao.getDataRealizada());
+			parcelaEmprestimo.setTipo(operacao.getTipo());
+			parcelaEmprestimo.setValor(operacao.getValor());
+			parcelaEmprestimo.setContaCorrenteId(operacao.getConta().getId());
+			parcelaEmprestimo.setEmprestimoId(operacao.getEmprestimo().getId());
+			return parcelaEmprestimo;
 		}
 		
 		OperacaoResponseDTO responseDTO = new OperacaoResponseDTO();

@@ -48,8 +48,12 @@ public class Operacao implements Serializable {
 	@JoinColumn(name = "conta_corrente_destino_id", nullable = true)
 	private ContaCorrente contaDestino;
 	
+	@ManyToOne
+	@JoinColumn(name = "emprestimo_id", nullable = true)
+	private Emprestimo emprestimo;
+	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "tipo", nullable = false)
+	@Column(name = "tipo", nullable = false, length = 20)
 	private TipoOperacao tipo;
 	
 	@PrePersist

@@ -52,6 +52,9 @@ public class ContaCorrente implements Serializable{
 	@OneToMany(mappedBy = "conta")
 	private Set<Operacao> operacoes = new HashSet<>();
 	
+	@OneToMany(mappedBy = "conta")
+	private Set<Emprestimo> emprestimos = new HashSet<>();
+	
 	@PrePersist
     public void prePersist() {
         final Date atual = new Date();

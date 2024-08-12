@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.acc.banco.exception.CompraInvalidaException;
 import br.acc.banco.exception.DepositoInvalidoException;
+import br.acc.banco.exception.EmprestimoInvalidoException;
 import br.acc.banco.exception.EntityNotFoundException;
 import br.acc.banco.exception.PixInvalidoException;
 import br.acc.banco.exception.SaqueInvalidoException;
@@ -67,6 +68,10 @@ public class RestExceptionHandler {
 	        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getMessage());
 	        return new ResponseEntity<>(errorMessage,HttpStatus.BAD_REQUEST);
 	    }
-	 
+	 @ExceptionHandler(EmprestimoInvalidoException.class)
+	    public ResponseEntity<ErrorMessage> emprestimoInvalidoException(EmprestimoInvalidoException ex){
+	        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getMessage());
+	        return new ResponseEntity<>(errorMessage,HttpStatus.BAD_REQUEST);
+	    }
 
 }

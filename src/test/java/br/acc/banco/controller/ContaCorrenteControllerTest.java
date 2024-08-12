@@ -30,18 +30,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.acc.banco.dto.contaCorrente.ContaCorrenteCreateDTO;
 import br.acc.banco.dto.contaCorrente.ContaCorrenteResponseDTO;
+import br.acc.banco.dto.emprestimo.EmprestimoCreateDTO;
+import br.acc.banco.dto.emprestimo.EmprestimoResponseDTO;
 import br.acc.banco.dto.operacao.CompraCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoResponseDTO;
 import br.acc.banco.dto.operacao.PixCreateDTO;
 import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
 import br.acc.banco.exception.EntityNotFoundException;
+import br.acc.banco.exception.UsernameUniqueViolationException;
 import br.acc.banco.mapper.ContaCorrenteMapper;
+import br.acc.banco.mapper.EmprestimoMapper;
 import br.acc.banco.mapper.OperacaoMapper;
 import br.acc.banco.models.ContaCorrente;
+import br.acc.banco.models.Emprestimo;
 import br.acc.banco.models.Operacao;
-import br.acc.banco.service.ContaCorrenteService;
+import br.acc.banco.models.enums.StatusEmprestimo;
 import br.acc.banco.models.enums.TipoOperacao;
+import br.acc.banco.service.ContaCorrenteService;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(ContaCorrenteController.class)
@@ -59,6 +65,9 @@ public class ContaCorrenteControllerTest {
     @MockBean
     private OperacaoMapper operacaoMapper;
 
+    @MockBean
+    private EmprestimoMapper emprestimoMapper;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -67,6 +76,8 @@ public class ContaCorrenteControllerTest {
     private ContaCorrenteCreateDTO contaCorrenteCreateDTO;
     private Operacao operacao;
     private OperacaoResponseDTO operacaoResponseDTO;
+    private Emprestimo emprestimo;
+    private EmprestimoResponseDTO emprestimoResponseDTO;
 
     @BeforeEach
     public void setUp() {
@@ -74,7 +85,7 @@ public class ContaCorrenteControllerTest {
         contaCorrente.setId(1L);
         contaCorrente.setNumero(123456);
         contaCorrente.setSaldo(BigDecimal.valueOf(1000));
-        
+
         Date date = new Date();
 
         contaCorrenteResponseDTO = new ContaCorrenteResponseDTO(1L, 123456, BigDecimal.valueOf(1000), 1L, 1L, date);
@@ -84,8 +95,19 @@ public class ContaCorrenteControllerTest {
         operacao.setId(1L);
         operacao.setConta(contaCorrente);
         operacao.setValor(BigDecimal.valueOf(100));
-        
+
         operacaoResponseDTO = new OperacaoResponseDTO(1L, date, TipoOperacao.SAQUE, BigDecimal.valueOf(100), 1L);
+
+        emprestimo = new Emprestimo();
+        emprestimo.setId(1L);
+        emprestimo.setConta(contaCorrente);
+        emprestimo.setValor(BigDecimal.valueOf(1000));
+        emprestimo.setQuantidadeParcelas(10);
+        emprestimo.setQuantidadeParcelasPagas(0);
+        emprestimo.setValorParcela(BigDecimal.valueOf(100));
+        emprestimo.setStatus(StatusEmprestimo.APROVADO);
+
+        emprestimoResponseDTO = new EmprestimoResponseDTO(1L, BigDecimal.valueOf(1000), StatusEmprestimo.APROVADO, 10, 0, BigDecimal.valueOf(100));
     }
 
     @Test
@@ -104,13 +126,22 @@ public class ContaCorrenteControllerTest {
 
     @Test
     public void testSaveContaCorrenteComDadosInvalidos() throws Exception {
+        // Simulando a exceção quando um número de conta duplicado é detectado
+        when(contaCorrenteMapper.toContaCorrente(any(ContaCorrenteCreateDTO.class))).thenReturn(contaCorrente);
+        when(contaCorrenteService.salvar(any(ContaCorrente.class)))
+            .thenThrow(new UsernameUniqueViolationException("Conta com numero: -1 já cadastrada!"));
+
+        // Criação de um DTO com dados inválidos
         ContaCorrenteCreateDTO contaInvalida = new ContaCorrenteCreateDTO(-1, BigDecimal.ZERO, 1L, 1L);
 
+        // Execução do POST request e verificações de resposta
         mockMvc.perform(post("/api/banco/contaCorrente")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(contaInvalida)));
-               
+                .content(objectMapper.writeValueAsString(contaInvalida)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Conta com numero: -1 já cadastrada!"));
     }
+
 
     @Test
     public void testFindAllContasCorrentesComSucesso() throws Exception {
@@ -249,4 +280,22 @@ public class ContaCorrenteControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].valor").value(100));
     }
+
+    @Test
+    public void testSolicitarEmprestimoComSucesso() throws Exception {
+        when(contaCorrenteService.solicitarEmprestimo(any(Long.class), any(BigDecimal.class), any(Integer.class))).thenReturn(emprestimo);
+        when(emprestimoMapper.toDto(any(Emprestimo.class))).thenReturn(emprestimoResponseDTO);
+
+        EmprestimoCreateDTO createDTO = new EmprestimoCreateDTO(BigDecimal.valueOf(1000), 10, 1L);
+
+        mockMvc.perform(post("/api/banco/contaCorrente/emprestimo/solicitar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.valor").value(1000))
+                .andExpect(jsonPath("$.quatidadeParcelas").value(10));
+    }
+
+
 }

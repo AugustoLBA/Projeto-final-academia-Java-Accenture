@@ -2,8 +2,6 @@ package br.acc.banco.dto.emprestimo;
 
 import java.math.BigDecimal;
 
-import br.acc.banco.models.enums.StatusEmprestimo;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,4 +22,8 @@ public class EmprestimoCreateDTO {
 	
 	@NotNull(message = "O ID da ContaCorrente  não pode ser nulo !")
 	private Long contaCorrenteId;
+
+	
+	
+	
 }

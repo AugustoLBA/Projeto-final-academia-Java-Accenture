@@ -1,6 +1,7 @@
 package br.acc.banco.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.acc.banco.dto.agencia.AgenciaResponseDTO;
 import br.acc.banco.dto.cliente.ClienteCreateDTO;
 import br.acc.banco.dto.cliente.ClienteResponseDTO;
 import br.acc.banco.mapper.ClienteMapper;
@@ -36,9 +38,9 @@ public class ClienteController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<ClienteResponseDTO>> findAll(){
-		List<Cliente> clientes = clienteService.buscarTodos();
-		return ResponseEntity.status(HttpStatus.OK).body(clienteMapper.toListDto(clientes));
+	public ResponseEntity<List<ClienteResponseDTO>> getAll(){
+		List<ClienteResponseDTO> clienteResponseDTO = clienteMapper.toListDto(clienteService.buscarTodos());
+		return ResponseEntity.status(HttpStatus.OK).body(clienteResponseDTO);
 	}
 	
 	@GetMapping("/{id}")

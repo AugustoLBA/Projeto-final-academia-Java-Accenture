@@ -169,6 +169,16 @@ public class ContaCorrenteController {
         contaCorrenteService.cancelarSeguro(seguroId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
+    
+    @GetMapping("buscar/emprestimos/{id}")
+    public ResponseEntity<List<EmprestimoResponseDTO>> buscarEmprestimosDaConta(@PathVariable Long id){
+    	List<Emprestimo> emprestimos = contaCorrenteService.buscarEmprestimosDaConta(id);
+    	return ResponseEntity.status(HttpStatus.OK).body(emprestimoMapper.toListDto(emprestimos));
+    }
+    @GetMapping("buscar/seguros/{id}")
+    public ResponseEntity<List<SeguroResponseDTO>> buscarSegurosDaConta(@PathVariable Long id){
+    	List<Seguro> seguros = contaCorrenteService.buscarSegurosDaConta(id);
+    	return ResponseEntity.status(HttpStatus.OK).body(seguroMapper.toListDto(seguros));
+    }
 
 }

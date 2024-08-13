@@ -194,6 +194,7 @@ public class ContaCorrenteService {
 
 
 	public List<Operacao> exibirExtrato(Long id){
+		buscarPorId(id); // verifica se a conta existe
 		List<Operacao> operacoes = operacaoService.buscarTodas();
 		if(operacoes != null) {
 			return operacoes.stream()
@@ -349,6 +350,16 @@ public class ContaCorrenteService {
 
 		seguro.setStatus(StatusSeguro.CANCELADO);
 		return seguroService.salvar(seguro);
+	}
+	
+	public List<Seguro> buscarSegurosDaConta(Long id){
+		// verifica se a conta existe
+		return seguroService.findByContaId(buscarPorId(id).getId());
+	}
+	
+	public List<Emprestimo> buscarEmprestimosDaConta(Long id){
+		// verifica se a conta existe
+		return emprestimoService.findByContaId(buscarPorId(id).getId());
 	}
 
 }

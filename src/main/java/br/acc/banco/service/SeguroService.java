@@ -37,4 +37,9 @@ public class SeguroService {
 		Seguro seguro = buscarPorId(id);
 		seguroRepository.delete(seguro);
 	}
+
+
+	public List<Seguro> findByContaId(Long id) {
+		return seguroRepository.findByContaId(id);
+	}
 }

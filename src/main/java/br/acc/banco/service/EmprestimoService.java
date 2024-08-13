@@ -37,4 +37,9 @@ public class EmprestimoService {
 		Emprestimo emprestimo = buscarPorId(id);
 		emprestimoRepository.delete(emprestimo);
 	}
+
+
+	public List<Emprestimo> findByContaId(Long id) {
+		return emprestimoRepository.findByContaId(id);
+	}
 }

@@ -22,12 +22,17 @@ import br.acc.banco.dto.operacao.OperacaoCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoResponseDTO;
 import br.acc.banco.dto.operacao.PixCreateDTO;
 import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
+import br.acc.banco.dto.seguro.ParcelaSeguroDTO;
+import br.acc.banco.dto.seguro.SeguroCreateDTO;
+import br.acc.banco.dto.seguro.SeguroResponseDTO;
 import br.acc.banco.mapper.ContaCorrenteMapper;
 import br.acc.banco.mapper.EmprestimoMapper;
 import br.acc.banco.mapper.OperacaoMapper;
+import br.acc.banco.mapper.SeguroMapper;
 import br.acc.banco.models.ContaCorrente;
 import br.acc.banco.models.Emprestimo;
 import br.acc.banco.models.Operacao;
+import br.acc.banco.models.Seguro;
 import br.acc.banco.service.ContaCorrenteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +49,8 @@ public class ContaCorrenteController {
     private final OperacaoMapper operacaoMapper;
     
     private final EmprestimoMapper emprestimoMapper;
+    
+    private final SeguroMapper seguroMapper;
 
     @PostMapping
     public ResponseEntity<ContaCorrenteResponseDTO> save(@Valid @RequestBody ContaCorrenteCreateDTO createDTO) {
@@ -84,7 +91,7 @@ public class ContaCorrenteController {
 
     @PostMapping("/transferencia")
     public ResponseEntity<OperacaoResponseDTO> transferencia(@Valid @RequestBody TransferenciaCreateDTO createDTO) {
-    	Operacao operacao = contaCorrenteService.transferencia(createDTO.getValor(), createDTO.getContaCorrenteId(), createDTO.getContaCorrenteDestinoId());
+    	Operacao operacao = contaCorrenteService.transferencia(createDTO.getValor(), createDTO.getContaCorrenteOrigem(), createDTO.getContaCorrenteDestinoNumero());
         return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
 
@@ -96,7 +103,7 @@ public class ContaCorrenteController {
 
     @PostMapping("/pix")
     public ResponseEntity<OperacaoResponseDTO> pix(@Valid @RequestBody PixCreateDTO createDTO) {
-    	Operacao operacao = contaCorrenteService.pix(createDTO.getValor(), createDTO.getContaCorrenteId(), createDTO.getChavePix());
+    	Operacao operacao = contaCorrenteService.pix(createDTO.getValor(), createDTO.getChavePixOrigem(), createDTO.getChavePixDestino());
         return ResponseEntity.status(HttpStatus.OK).body(operacaoMapper.toDto(operacao));
     }
     @GetMapping("/extrato/{id}")
@@ -123,4 +130,44 @@ public class ContaCorrenteController {
     	return ResponseEntity.status(HttpStatus.OK).body(emprestimoMapper.toDto(emprestimo));
     }
     
+    @GetMapping("buscar/{id}")
+    public ResponseEntity<ContaCorrenteResponseDTO> buscarContaPorIdCliente(@PathVariable Long id){
+    	ContaCorrente conta = contaCorrenteService.buscarContaPorIdCliente(id);
+    	return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(conta));
+    }
+    @GetMapping("buscar/chavepix/{chavePix}")
+    public ResponseEntity<ContaCorrenteResponseDTO> buscarContaPorChavePix(@PathVariable String chavePix){
+    	ContaCorrente conta = contaCorrenteService.buscarContaPorChavePix(chavePix);
+    	return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(conta));
+    }
+    @GetMapping("buscar/numero/{numero}")
+    public ResponseEntity<ContaCorrenteResponseDTO> buscarContaPorNumero(@PathVariable int numero){
+    	ContaCorrente conta = contaCorrenteService.buscarContaPorNumero(numero);
+    	return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteMapper.toDto(conta));
+    }
+    @PostMapping("/seguro/pagar/parcela")
+    public ResponseEntity<SeguroResponseDTO> pagarParcelaSeguro(@Valid @RequestBody ParcelaSeguroDTO dto){
+        Seguro seguro = contaCorrenteService.pagarParcelaSeguro(
+            dto.getContaCorrenteId(),
+            dto.getSeguroID(),
+            dto.getValor());
+        return ResponseEntity.status(HttpStatus.OK).body(seguroMapper.toDto(seguro));
+    }
+    
+    @PostMapping("/seguro/solicitar")
+    public ResponseEntity<SeguroResponseDTO> solicitarSeguro(@Valid @RequestBody SeguroCreateDTO createDTO) {
+        Seguro seguro = contaCorrenteService.solicitarSeguro(
+            createDTO.getContaCorrenteId(),
+            createDTO.getValor(),
+            createDTO.getQuantidadeParcelas());
+        return ResponseEntity.status(HttpStatus.OK).body(seguroMapper.toDto(seguro));
+    }
+
+    @PostMapping("/seguro/cancelar/{seguroId}")
+    public ResponseEntity<Void> cancelarSeguro(@PathVariable Long seguroId) {
+        contaCorrenteService.cancelarSeguro(seguroId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
 }

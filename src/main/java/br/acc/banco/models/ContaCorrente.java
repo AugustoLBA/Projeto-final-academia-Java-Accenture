@@ -35,6 +35,9 @@ public class ContaCorrente implements Serializable{
 	@Column(name = "numero", nullable = false, unique = true)
     private int numero;
 	
+	@Column(name = "chave_pix", nullable = false, unique = true, length = 100)
+	private String chavePix;
+	
 	@Column(name = "saldo", nullable = false)
     private BigDecimal saldo;
 	
@@ -54,6 +57,9 @@ public class ContaCorrente implements Serializable{
 	
 	@OneToMany(mappedBy = "conta")
 	private Set<Emprestimo> emprestimos = new HashSet<>();
+	
+	@OneToMany(mappedBy = "conta")
+	private Set<Seguro> seguros = new HashSet<>();
 	
 	@PrePersist
     public void prePersist() {

@@ -1,7 +1,6 @@
 package br.acc.banco.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.acc.banco.dto.agencia.AgenciaResponseDTO;
 import br.acc.banco.dto.cliente.ClienteCreateDTO;
 import br.acc.banco.dto.cliente.ClienteResponseDTO;
 import br.acc.banco.mapper.ClienteMapper;
@@ -53,6 +51,12 @@ public class ClienteController {
 	public ResponseEntity<Void> deleteById(@PathVariable Long id){
 		clienteService.deletarPorId(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+	
+	@GetMapping("/cpf/{cpf}")
+	public ResponseEntity<ClienteResponseDTO> buscarPorCpf(@PathVariable String cpf){
+		Cliente cliente = clienteService.buscarPorCPF(cpf);
+		return ResponseEntity.status(HttpStatus.OK).body(clienteMapper.toDto(cliente));
 	}
 
 }

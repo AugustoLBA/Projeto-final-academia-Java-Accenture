@@ -24,4 +24,6 @@ public class ContaCorrenteResponseDTO {
 	    private Long clienteId;
 	    
 	    private Date dataCriacao;
+	    
+	    private String chavePix;
 }

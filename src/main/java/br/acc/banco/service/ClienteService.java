@@ -47,5 +47,10 @@ public class ClienteService {
 		Cliente cliente = buscarPorId(id);
 		clienteRepository.delete(cliente);
 	}
+	
+	public Cliente buscarPorCPF(String cpf) {
+		return clienteRepository.findByCpf(cpf).
+				orElseThrow(() -> new EntityNotFoundException("Cliente com CPF: "+cpf+" não encontrado !"));
+	}
 
 }

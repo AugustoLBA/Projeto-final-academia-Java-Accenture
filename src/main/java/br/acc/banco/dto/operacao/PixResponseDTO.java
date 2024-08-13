@@ -11,5 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PixResponseDTO extends OperacaoResponseDTO{
 
-	private String chavePix;
+	private String chavePixOrigem;
+	
+	private String chavePixDestino;
 }

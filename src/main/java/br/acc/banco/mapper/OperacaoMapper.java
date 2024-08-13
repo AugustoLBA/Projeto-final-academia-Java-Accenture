@@ -11,6 +11,7 @@ import br.acc.banco.dto.operacao.CompraResponseDTO;
 import br.acc.banco.dto.operacao.OperacaoCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoResponseDTO;
 import br.acc.banco.dto.operacao.ParcelaEmprestimoDTO;
+import br.acc.banco.dto.operacao.ParcelaSeguroDTO;
 import br.acc.banco.dto.operacao.PixCreateDTO;
 import br.acc.banco.dto.operacao.PixResponseDTO;
 import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
@@ -32,15 +33,33 @@ public class OperacaoMapper {
 		if(dto.getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
 			TransferenciaCreateDTO transferencia = (TransferenciaCreateDTO) dto;
 			BeanUtils.copyProperties(transferencia, operacao);
-			operacao.setConta(contaCorrenteService.buscarPorId(transferencia.getContaCorrenteId()));
-			operacao.setContaDestino(contaCorrenteService.buscarPorId(transferencia.getContaCorrenteDestinoId()));
+			operacao.setConta(contaCorrenteService.buscarContaPorNumero(
+					operacao.getConta().getNumero()));
+			operacao.setContaDestino(contaCorrenteService.buscarContaPorNumero(
+					operacao.getContaDestino().getNumero()));
+			return operacao;
+		}
+		if(dto.getTipo().equals(TipoOperacao.RECEBEU_TRANSFERENCIA)) {
+			TransferenciaCreateDTO transferencia = (TransferenciaCreateDTO) dto;
+			BeanUtils.copyProperties(transferencia, operacao);
+			operacao.setConta(contaCorrenteService.buscarContaPorNumero(
+					operacao.getContaDestino().getNumero()));
+			operacao.setContaDestino(contaCorrenteService.buscarContaPorNumero(
+					operacao.getConta().getNumero()));
 			return operacao;
 		}
 		if(dto.getTipo().equals(TipoOperacao.PIX)) {
 			PixCreateDTO pix = (PixCreateDTO) dto;
 			BeanUtils.copyProperties(pix, operacao);
-			operacao.setConta(contaCorrenteService.buscarPorId(pix.getContaCorrenteId()));
-			operacao.setChavePix(pix.getChavePix());
+			operacao.setConta(contaCorrenteService.buscarContaPorChavePix(pix.getChavePixOrigem()));
+			operacao.setChavePix(pix.getChavePixOrigem());
+			return operacao;
+		}
+		if(dto.getTipo().equals(TipoOperacao.RECEBEU_PIX)) {
+			PixCreateDTO pix = (PixCreateDTO) dto;
+			BeanUtils.copyProperties(pix, operacao);
+			operacao.setConta(contaCorrenteService.buscarContaPorChavePix(pix.getChavePixDestino()));
+			operacao.setChavePix(pix.getChavePixDestino());
 			return operacao;
 		}
 		if(dto.getTipo().equals(TipoOperacao.COMPRA)) {
@@ -61,15 +80,36 @@ public class OperacaoMapper {
 		if(operacao.getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
 			TransferenciaResponseDTO dto = new TransferenciaResponseDTO();
 			BeanUtils.copyProperties(operacao, dto);
-			dto.setContaCorrenteDestinoId(operacao.getContaDestino().getId());
 			dto.setContaCorrenteId(operacao.getConta().getId());
+			dto.setContaCorrenteDestinoNumero(operacao.getContaDestino().getNumero());
+			dto.setContaCorrenteOrigem(operacao.getConta().getNumero());
+			return dto;
+		}
+		if(operacao.getTipo().equals(TipoOperacao.RECEBEU_TRANSFERENCIA)) {
+			TransferenciaResponseDTO dto = new TransferenciaResponseDTO();
+			BeanUtils.copyProperties(operacao, dto);
+			dto.setContaCorrenteId(operacao.getConta().getId());
+			dto.setContaCorrenteDestinoNumero(operacao.getConta().getNumero());
+			dto.setContaCorrenteOrigem(operacao.getContaDestino().getNumero());
 			return dto;
 		}
 		if(operacao.getTipo().equals(TipoOperacao.PIX)) {
 			PixResponseDTO dto = new PixResponseDTO();
 			BeanUtils.copyProperties(operacao, dto);
 			dto.setContaCorrenteId(operacao.getConta().getId());
-			dto.setChavePix(operacao.getChavePix());
+			dto.setChavePixOrigem(operacao.getChavePix());
+			dto.setChavePixDestino(contaCorrenteService.buscarContaPorChavePix(
+					operacao.getContaDestino().getChavePix()).getChavePix());
+			return dto;
+		}
+		if(operacao.getTipo().equals(TipoOperacao.RECEBEU_PIX)) {
+			PixResponseDTO dto = new PixResponseDTO();
+			BeanUtils.copyProperties(operacao, dto);
+			dto.setContaCorrenteId(operacao.getConta().getId());
+			dto.setChavePixOrigem(contaCorrenteService.buscarContaPorChavePix(
+					operacao.getContaDestino().getChavePix()).getChavePix());
+			
+			dto.setChavePixDestino(operacao.getChavePix());
 			return dto;
 		}
 		if(operacao.getTipo().equals(TipoOperacao.COMPRA)) {
@@ -79,7 +119,7 @@ public class OperacaoMapper {
 			dto.setNomeEstabelecimento(operacao.getNomeEstabelecimento());
 			return dto;
 		}
-		if(operacao.getTipo().equals(TipoOperacao.PARCELAEMPRESTIMO)) {
+		if(operacao.getTipo().equals(TipoOperacao.PARCELA_EMPRESTIMO)) {
 			ParcelaEmprestimoDTO parcelaEmprestimo = new ParcelaEmprestimoDTO();
 			parcelaEmprestimo.setId(operacao.getId());
 			parcelaEmprestimo.setDataRealizada(operacao.getDataRealizada());
@@ -88,6 +128,16 @@ public class OperacaoMapper {
 			parcelaEmprestimo.setContaCorrenteId(operacao.getConta().getId());
 			parcelaEmprestimo.setEmprestimoId(operacao.getEmprestimo().getId());
 			return parcelaEmprestimo;
+		}
+		if(operacao.getTipo().equals(TipoOperacao.PARCELA_SEGURO)) {
+			ParcelaSeguroDTO parcelaSeguroDTO = new ParcelaSeguroDTO();
+			parcelaSeguroDTO.setId(operacao.getId());
+			parcelaSeguroDTO.setDataRealizada(operacao.getDataRealizada());
+			parcelaSeguroDTO.setTipo(operacao.getTipo());
+			parcelaSeguroDTO.setValor(operacao.getValor());
+			parcelaSeguroDTO.setContaCorrenteId(operacao.getConta().getId());
+			parcelaSeguroDTO.setSeguroId(operacao.getSeguro().getId());
+			return parcelaSeguroDTO;
 		}
 		
 		OperacaoResponseDTO responseDTO = new OperacaoResponseDTO();

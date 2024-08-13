@@ -17,15 +17,20 @@ import lombok.ToString;
 @NoArgsConstructor
 public class TransferenciaCreateDTO extends OperacaoCreateDTO {
 	
-	@NotNull(message = "O id da conta destino não pode ser vazio!")
-	private Long contaCorrenteDestinoId;
+	@NotNull(message = "O numero da conta origem não pode ser vazio!")
+	private int contaCorrenteOrigem;
 
+	@NotNull(message = "O numero da conta destino não pode ser vazio!")
+	private int contaCorrenteDestinoNumero;
 
 	public TransferenciaCreateDTO(TipoOperacao tipo, BigDecimal valor, Long contaCorrenteId,
-			@NotNull(message = "O id da conta destino não pode ser vazio!") Long contaCorrenteDestinoId) {
+			@NotNull(message = "O numero da conta origem não pode ser vazio!") int contaCorrenteOrigem,
+			@NotNull(message = "O numero da conta destino não pode ser vazio!") int contaCorrenteDestinoNumero) {
 		super(tipo, valor, contaCorrenteId);
-		this.contaCorrenteDestinoId = contaCorrenteDestinoId;
+		this.contaCorrenteOrigem = contaCorrenteOrigem;
+		this.contaCorrenteDestinoNumero = contaCorrenteDestinoNumero;
 	}
+	
 	
 	
 

@@ -21,13 +21,13 @@ public class EmprestimoService {
 		return emprestimoRepository.save(emprestimo);
 	}
 	
-	@Transactional
+	
 	public Emprestimo buscarPorId(Long id) {
 		return emprestimoRepository.findById(id).orElseThrow(
 				()-> new EntityNotFoundException("Emprestimo com "+id+" não encontrado!"));
 	}
 	
-	@Transactional
+	
 	public List<Emprestimo> buscarTodos(){
 		return emprestimoRepository.findAll();
 	}

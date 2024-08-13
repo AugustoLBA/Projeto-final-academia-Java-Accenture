@@ -2,6 +2,7 @@ package br.acc.banco.dto.contaCorrente;
 
 import java.math.BigDecimal;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,4 +24,7 @@ public class ContaCorrenteCreateDTO {
 
 	@NotNull(message = "O ID do CLIENTE da conta não pode ser nulo !")
 	private Long clienteId;
+	
+	@NotBlank(message = "A chave PIX da ContaCorrente não pode ser nula!")
+	private String chavePix;
 }

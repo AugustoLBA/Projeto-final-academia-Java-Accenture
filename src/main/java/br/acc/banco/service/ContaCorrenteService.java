@@ -59,7 +59,7 @@ public class ContaCorrenteService {
 	}
 	public ContaCorrente buscarPorId(Long id) {
 		return contaCorrenteRepository.findById(id).orElseThrow(
-				()-> new EntityNotFoundException("Conta com "+id+" não encontrada!"));
+				()-> new EntityNotFoundException("Conta com ID: "+id+" não encontrada!"));
 
 	}
 

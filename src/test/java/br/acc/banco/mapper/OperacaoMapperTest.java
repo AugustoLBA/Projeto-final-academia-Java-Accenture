@@ -18,12 +18,16 @@ import br.acc.banco.dto.operacao.CompraCreateDTO;
 import br.acc.banco.dto.operacao.CompraResponseDTO;
 import br.acc.banco.dto.operacao.OperacaoCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoResponseDTO;
+import br.acc.banco.dto.operacao.ParcelaEmprestimoDTO;
+import br.acc.banco.dto.operacao.ParcelaSeguroDTO;
 import br.acc.banco.dto.operacao.PixCreateDTO;
 import br.acc.banco.dto.operacao.PixResponseDTO;
 import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
 import br.acc.banco.dto.operacao.TransferenciaResponseDTO;
 import br.acc.banco.models.ContaCorrente;
+import br.acc.banco.models.Emprestimo;
 import br.acc.banco.models.Operacao;
+import br.acc.banco.models.Seguro;
 import br.acc.banco.models.enums.TipoOperacao;
 import br.acc.banco.service.ContaCorrenteService;
 
@@ -45,46 +49,37 @@ public class OperacaoMapperTest {
         conta.setId(1L);
         conta.setNumero(123456);
         conta.setSaldo(BigDecimal.valueOf(1000));
+        conta.setChavePix("chaveOrigem");
 
         contaDestino = new ContaCorrente();
         contaDestino.setId(2L);
         contaDestino.setNumero(654321);
         contaDestino.setSaldo(BigDecimal.valueOf(500));
+        contaDestino.setChavePix("chaveDestino");
     }
 
-    @Test
-    public void testToOperacaoTransferencia() {
-        TransferenciaCreateDTO transferenciaCreateDTO = new TransferenciaCreateDTO(TipoOperacao.TRANSFERENCIA, BigDecimal.valueOf(100), 1L, 2L);
-        transferenciaCreateDTO.setTipo(TipoOperacao.TRANSFERENCIA);
 
-        when(contaCorrenteService.buscarPorId(1L)).thenReturn(conta);
-        when(contaCorrenteService.buscarPorId(2L)).thenReturn(contaDestino);
 
-        Operacao operacao = operacaoMapper.toOperacao(transferenciaCreateDTO);
 
-        assertEquals(TipoOperacao.TRANSFERENCIA, operacao.getTipo());
-        assertEquals(conta, operacao.getConta());
-        assertEquals(contaDestino, operacao.getContaDestino());
-    }
 
     @Test
     public void testToOperacaoPix() {
-        PixCreateDTO pixCreateDTO = new PixCreateDTO(TipoOperacao.PIX, BigDecimal.valueOf(100), 1L, "chave123");
-        pixCreateDTO.setTipo(TipoOperacao.PIX);
+        PixCreateDTO pixCreateDTO = new PixCreateDTO(TipoOperacao.PIX, BigDecimal.valueOf(100), 1L, "chaveOrigem", "chaveDestino");
 
-        when(contaCorrenteService.buscarPorId(1L)).thenReturn(conta);
+        when(contaCorrenteService.buscarContaPorChavePix("chaveOrigem")).thenReturn(conta);
 
         Operacao operacao = operacaoMapper.toOperacao(pixCreateDTO);
 
         assertEquals(TipoOperacao.PIX, operacao.getTipo());
         assertEquals(conta, operacao.getConta());
-        assertEquals("chave123", operacao.getChavePix());
+        assertEquals("chaveOrigem", operacao.getChavePix());
     }
+
+
 
     @Test
     public void testToOperacaoCompra() {
         CompraCreateDTO compraCreateDTO = new CompraCreateDTO(TipoOperacao.COMPRA, BigDecimal.valueOf(100), 1L, "Loja X");
-        compraCreateDTO.setTipo(TipoOperacao.COMPRA);
 
         when(contaCorrenteService.buscarPorId(1L)).thenReturn(conta);
 
@@ -98,7 +93,6 @@ public class OperacaoMapperTest {
     @Test
     public void testToOperacaoGenerica() {
         OperacaoCreateDTO operacaoCreateDTO = new OperacaoCreateDTO(TipoOperacao.SAQUE, BigDecimal.valueOf(100), 1L);
-        operacaoCreateDTO.setTipo(TipoOperacao.SAQUE);
 
         when(contaCorrenteService.buscarPorId(1L)).thenReturn(conta);
 
@@ -121,7 +115,23 @@ public class OperacaoMapperTest {
 
         assertEquals(TipoOperacao.TRANSFERENCIA, dto.getTipo());
         assertEquals(1L, dto.getContaCorrenteId());
-        assertEquals(2L, dto.getContaCorrenteDestinoId());
+        assertEquals(654321, dto.getContaCorrenteDestinoNumero());
+    }
+
+    @Test
+    public void testToDtoRecebeuTransferencia() {
+        Operacao operacao = new Operacao();
+        operacao.setId(1L);
+        operacao.setTipo(TipoOperacao.RECEBEU_TRANSFERENCIA);
+        operacao.setConta(contaDestino);
+        operacao.setContaDestino(conta);
+        operacao.setValor(BigDecimal.valueOf(100));
+
+        TransferenciaResponseDTO dto = (TransferenciaResponseDTO) operacaoMapper.toDto(operacao);
+
+        assertEquals(TipoOperacao.RECEBEU_TRANSFERENCIA, dto.getTipo());
+        assertEquals(2L, dto.getContaCorrenteId());
+        assertEquals(123456, dto.getContaCorrenteOrigem());
     }
 
     @Test
@@ -130,14 +140,38 @@ public class OperacaoMapperTest {
         operacao.setId(1L);
         operacao.setTipo(TipoOperacao.PIX);
         operacao.setConta(conta);
-        operacao.setChavePix("chave123");
+        operacao.setContaDestino(contaDestino);
+        operacao.setChavePix("chaveOrigem");
         operacao.setValor(BigDecimal.valueOf(100));
+
+        when(contaCorrenteService.buscarContaPorChavePix("chaveDestino")).thenReturn(contaDestino);
 
         PixResponseDTO dto = (PixResponseDTO) operacaoMapper.toDto(operacao);
 
         assertEquals(TipoOperacao.PIX, dto.getTipo());
         assertEquals(1L, dto.getContaCorrenteId());
-        assertEquals("chave123", dto.getChavePix());
+        assertEquals("chaveOrigem", dto.getChavePixOrigem());
+        assertEquals("chaveDestino", dto.getChavePixDestino());
+    }
+
+    @Test
+    public void testToDtoRecebeuPix() {
+        Operacao operacao = new Operacao();
+        operacao.setId(1L);
+        operacao.setTipo(TipoOperacao.RECEBEU_PIX);
+        operacao.setConta(contaDestino);
+        operacao.setContaDestino(conta);
+        operacao.setChavePix("chaveDestino");
+        operacao.setValor(BigDecimal.valueOf(100));
+
+        when(contaCorrenteService.buscarContaPorChavePix("chaveOrigem")).thenReturn(conta);
+
+        PixResponseDTO dto = (PixResponseDTO) operacaoMapper.toDto(operacao);
+
+        assertEquals(TipoOperacao.RECEBEU_PIX, dto.getTipo());
+        assertEquals(2L, dto.getContaCorrenteId());
+        assertEquals("chaveOrigem", dto.getChavePixOrigem());
+        assertEquals("chaveDestino", dto.getChavePixDestino());
     }
 
     @Test
@@ -154,6 +188,42 @@ public class OperacaoMapperTest {
         assertEquals(TipoOperacao.COMPRA, dto.getTipo());
         assertEquals(1L, dto.getContaCorrenteId());
         assertEquals("Loja X", dto.getNomeEstabelecimento());
+    }
+
+    @Test
+    public void testToDtoParcelaEmprestimo() {
+        Operacao operacao = new Operacao();
+        operacao.setId(1L);
+        operacao.setTipo(TipoOperacao.PARCELA_EMPRESTIMO);
+        operacao.setConta(conta);
+        operacao.setValor(BigDecimal.valueOf(100));
+        Emprestimo emprestimo = new Emprestimo();
+        emprestimo.setId(1L);
+        operacao.setEmprestimo(emprestimo);
+
+        ParcelaEmprestimoDTO dto = (ParcelaEmprestimoDTO) operacaoMapper.toDto(operacao);
+
+        assertEquals(TipoOperacao.PARCELA_EMPRESTIMO, dto.getTipo());
+        assertEquals(1L, dto.getContaCorrenteId());
+        assertEquals(1L, dto.getEmprestimoId());
+    }
+
+    @Test
+    public void testToDtoParcelaSeguro() {
+        Operacao operacao = new Operacao();
+        operacao.setId(1L);
+        operacao.setTipo(TipoOperacao.PARCELA_SEGURO);
+        operacao.setConta(conta);
+        operacao.setValor(BigDecimal.valueOf(100));
+        Seguro seguro = new Seguro();
+        seguro.setId(1L);
+        operacao.setSeguro(seguro);
+
+        ParcelaSeguroDTO dto = (ParcelaSeguroDTO) operacaoMapper.toDto(operacao);
+
+        assertEquals(TipoOperacao.PARCELA_SEGURO, dto.getTipo());
+        assertEquals(1L, dto.getContaCorrenteId());
+        assertEquals(1L, dto.getSeguroId());
     }
 
     @Test

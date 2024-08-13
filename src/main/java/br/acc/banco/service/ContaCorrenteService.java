@@ -161,11 +161,11 @@ public class ContaCorrenteService {
 
 	public Operacao pix(BigDecimal valorPix, String chavePixOrigem,String chavePixDestino) {
 		if(valorPix.compareTo(BigDecimal.ZERO) <= 0){
-			throw new PixInvalidoException("O valor do PIX não pode ser menor ou igual a zero !");
+			throw new PixInvalidoException("O valor do PIX nao pode ser menor ou igual a zero !");
 		}
 		ContaCorrente contaOrigem = buscarContaPorChavePix(chavePixOrigem);
 		if(valorPix.compareTo(contaOrigem.getSaldo()) > 0){
-			throw new PixInvalidoException("O valor do PIX é maior que o SALDO da conta !");
+			throw new PixInvalidoException("O valor do PIX eh maior que o SALDO da conta !");
 		}
 		ContaCorrente contaDestino = buscarContaPorChavePix(chavePixDestino);
 
@@ -320,7 +320,11 @@ public class ContaCorrenteService {
 
 		ContaCorrente conta = buscarPorId(contaId);
 		if (conta.getSaldo().compareTo(valorParcela) < 0) {
-			throw new IllegalArgumentException("Saldo insuficiente para pagar a parcela do seguro!");
+			throw new SeguroInvalidoException("Saldo insuficiente para pagar a parcela do seguro!");
+		}
+		if(valorParcela.compareTo(seguro.getValorParcela()) < 0
+				|| valorParcela.compareTo(seguro.getValorParcela()) > 0 ) {
+			throw new EmprestimoInvalidoException("O valor da PARCELA não pode ser maior e nem menor que: R$"+seguro.getValorParcela());
 		}
 
 		conta.setSaldo(conta.getSaldo().subtract(valorParcela));
@@ -339,17 +343,18 @@ public class ContaCorrenteService {
 		operacaoService.salvar(operacao);
 
 		return seguroService.salvar(seguro);
+		
 	}
 
 	@Transactional
-	public Seguro cancelarSeguro(Long seguroId) {
+	public void cancelarSeguro(Long seguroId) {
 		Seguro seguro = seguroService.buscarPorId(seguroId);
 		if (seguro.getStatus() == StatusSeguro.PAGO || seguro.getStatus() == StatusSeguro.CANCELADO) {
 			throw new SeguroInvalidoException("Este seguro já foi pago ou cancelado!");
 		}
 
 		seguro.setStatus(StatusSeguro.CANCELADO);
-		return seguroService.salvar(seguro);
+		 seguroService.salvar(seguro);
 	}
 	
 	public List<Seguro> buscarSegurosDaConta(Long id){

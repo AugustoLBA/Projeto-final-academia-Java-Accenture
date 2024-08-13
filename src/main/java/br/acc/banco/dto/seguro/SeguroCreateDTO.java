@@ -12,7 +12,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class SeguroCreateDTO {
 
@@ -27,4 +26,17 @@ public class SeguroCreateDTO {
 	
 	@NotNull(message = "O tipo do seguro não pode ser nulo")
 	private TipoSeguro tipo;
+
+	public SeguroCreateDTO(@NotNull(message = "O valor do seguro não pode ser nulo ") BigDecimal valor,
+			@NotNull(message = "A quantidade de parcelas não pode ser nula !") int quantidadeParcelas,
+			@NotNull(message = "O tipo do seguro não pode ser nulo") TipoSeguro tipo,
+			@NotNull(message = "O ID da ContaCorrente  não pode ser nulo !") Long contaCorrenteId) {
+		super();
+		this.valor = valor;
+		this.quantidadeParcelas = quantidadeParcelas;
+		this.contaCorrenteId = contaCorrenteId;
+		this.tipo = tipo;
+	}
+	
+	
 }

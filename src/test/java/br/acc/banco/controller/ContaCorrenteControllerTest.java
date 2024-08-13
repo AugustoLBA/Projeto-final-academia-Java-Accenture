@@ -32,21 +32,29 @@ import br.acc.banco.dto.contaCorrente.ContaCorrenteCreateDTO;
 import br.acc.banco.dto.contaCorrente.ContaCorrenteResponseDTO;
 import br.acc.banco.dto.emprestimo.EmprestimoCreateDTO;
 import br.acc.banco.dto.emprestimo.EmprestimoResponseDTO;
+import br.acc.banco.dto.emprestimo.ParcelaEmprestimoDTO;
 import br.acc.banco.dto.operacao.CompraCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoCreateDTO;
 import br.acc.banco.dto.operacao.OperacaoResponseDTO;
 import br.acc.banco.dto.operacao.PixCreateDTO;
 import br.acc.banco.dto.operacao.TransferenciaCreateDTO;
+import br.acc.banco.dto.seguro.ParcelaSeguroDTO;
+import br.acc.banco.dto.seguro.SeguroCreateDTO;
+import br.acc.banco.dto.seguro.SeguroResponseDTO;
 import br.acc.banco.exception.EntityNotFoundException;
 import br.acc.banco.exception.UsernameUniqueViolationException;
 import br.acc.banco.mapper.ContaCorrenteMapper;
 import br.acc.banco.mapper.EmprestimoMapper;
 import br.acc.banco.mapper.OperacaoMapper;
+import br.acc.banco.mapper.SeguroMapper;
 import br.acc.banco.models.ContaCorrente;
 import br.acc.banco.models.Emprestimo;
 import br.acc.banco.models.Operacao;
+import br.acc.banco.models.Seguro;
 import br.acc.banco.models.enums.StatusEmprestimo;
+import br.acc.banco.models.enums.StatusSeguro;
 import br.acc.banco.models.enums.TipoOperacao;
+import br.acc.banco.models.enums.TipoSeguro;
 import br.acc.banco.service.ContaCorrenteService;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,6 +76,9 @@ public class ContaCorrenteControllerTest {
     @MockBean
     private EmprestimoMapper emprestimoMapper;
 
+    @MockBean
+    private SeguroMapper seguroMapper;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -78,6 +89,8 @@ public class ContaCorrenteControllerTest {
     private OperacaoResponseDTO operacaoResponseDTO;
     private Emprestimo emprestimo;
     private EmprestimoResponseDTO emprestimoResponseDTO;
+    private Seguro seguro;
+    private SeguroResponseDTO seguroResponseDTO;
 
     @BeforeEach
     public void setUp() {
@@ -85,11 +98,12 @@ public class ContaCorrenteControllerTest {
         contaCorrente.setId(1L);
         contaCorrente.setNumero(123456);
         contaCorrente.setSaldo(BigDecimal.valueOf(1000));
+        contaCorrente.setChavePix("chavePix123");
 
         Date date = new Date();
 
-        contaCorrenteResponseDTO = new ContaCorrenteResponseDTO(1L, 123456, BigDecimal.valueOf(1000), 1L, 1L, date);
-        contaCorrenteCreateDTO = new ContaCorrenteCreateDTO(123456, BigDecimal.valueOf(1000), 1L, 1L);
+        contaCorrenteResponseDTO = new ContaCorrenteResponseDTO(1L, 123456, BigDecimal.valueOf(1000), 1L, 1L, date, "chavePix123");
+        contaCorrenteCreateDTO = new ContaCorrenteCreateDTO(123456, BigDecimal.valueOf(1000), 1L, 1L, "chavePix123");
 
         operacao = new Operacao();
         operacao.setId(1L);
@@ -108,6 +122,17 @@ public class ContaCorrenteControllerTest {
         emprestimo.setStatus(StatusEmprestimo.APROVADO);
 
         emprestimoResponseDTO = new EmprestimoResponseDTO(1L, BigDecimal.valueOf(1000), StatusEmprestimo.APROVADO, 10, 0, BigDecimal.valueOf(100));
+
+        seguro = new Seguro();
+        seguro.setId(1L);
+        seguro.setConta(contaCorrente);
+        seguro.setValor(BigDecimal.valueOf(500));
+        seguro.setQuantidadeParcelas(5);
+        seguro.setQuantidadeParcelasPagas(0);
+        seguro.setValorParcela(BigDecimal.valueOf(100));
+        seguro.setTipo(TipoSeguro.VIDA);
+
+        seguroResponseDTO = new SeguroResponseDTO(1L, BigDecimal.valueOf(500), StatusSeguro.ATIVO, TipoSeguro.VIDA, 5, 0, BigDecimal.valueOf(100));
     }
 
     @Test
@@ -121,27 +146,24 @@ public class ContaCorrenteControllerTest {
                 .content(objectMapper.writeValueAsString(contaCorrenteCreateDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.numero").value(123456));
+                .andExpect(jsonPath("$.numero").value(123456))
+                .andExpect(jsonPath("$.chavePix").value("chavePix123"));
     }
 
     @Test
     public void testSaveContaCorrenteComDadosInvalidos() throws Exception {
-        // Simulando a exceção quando um número de conta duplicado é detectado
         when(contaCorrenteMapper.toContaCorrente(any(ContaCorrenteCreateDTO.class))).thenReturn(contaCorrente);
         when(contaCorrenteService.salvar(any(ContaCorrente.class)))
             .thenThrow(new UsernameUniqueViolationException("Conta com numero: -1 já cadastrada!"));
 
-        // Criação de um DTO com dados inválidos
-        ContaCorrenteCreateDTO contaInvalida = new ContaCorrenteCreateDTO(-1, BigDecimal.ZERO, 1L, 1L);
+        ContaCorrenteCreateDTO contaInvalida = new ContaCorrenteCreateDTO(-1, BigDecimal.ZERO, 1L, 1L, "chavePixInvalida");
 
-        // Execução do POST request e verificações de resposta
         mockMvc.perform(post("/api/banco/contaCorrente")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(contaInvalida)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Conta com numero: -1 já cadastrada!"));
     }
-
 
     @Test
     public void testFindAllContasCorrentesComSucesso() throws Exception {
@@ -154,7 +176,8 @@ public class ContaCorrenteControllerTest {
         mockMvc.perform(get("/api/banco/contaCorrente"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].numero").value(123456));
+                .andExpect(jsonPath("$[0].numero").value(123456))
+                .andExpect(jsonPath("$[0].chavePix").value("chavePix123"));
     }
 
     @Test
@@ -165,7 +188,8 @@ public class ContaCorrenteControllerTest {
         mockMvc.perform(get("/api/banco/contaCorrente/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.numero").value(123456));
+                .andExpect(jsonPath("$.numero").value(123456))
+                .andExpect(jsonPath("$.chavePix").value("chavePix123"));
     }
 
     @Test
@@ -224,10 +248,10 @@ public class ContaCorrenteControllerTest {
 
     @Test
     public void testTransferenciaComSucesso() throws Exception {
-        when(contaCorrenteService.transferencia(any(BigDecimal.class), eq(1L), eq(2L))).thenReturn(operacao);
+        when(contaCorrenteService.transferencia(any(BigDecimal.class), eq(123456), eq(654321))).thenReturn(operacao);
         when(operacaoMapper.toDto(any(Operacao.class))).thenReturn(operacaoResponseDTO);
 
-        TransferenciaCreateDTO createDTO = new TransferenciaCreateDTO(TipoOperacao.TRANSFERENCIA, BigDecimal.valueOf(100), 1L, 2L);
+        TransferenciaCreateDTO createDTO = new TransferenciaCreateDTO(TipoOperacao.TRANSFERENCIA, BigDecimal.valueOf(100), 1L, 123456, 654321);
 
         mockMvc.perform(post("/api/banco/contaCorrente/transferencia")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -254,10 +278,9 @@ public class ContaCorrenteControllerTest {
 
     @Test
     public void testPixComSucesso() throws Exception {
-        when(contaCorrenteService.pix(any(BigDecimal.class), eq(1L), eq("chave123"))).thenReturn(operacao);
+        when(contaCorrenteService.pix(any(BigDecimal.class), eq("chavePixOrigem"), eq("chavePixDestino"))).thenReturn(operacao);
         when(operacaoMapper.toDto(any(Operacao.class))).thenReturn(operacaoResponseDTO);
-
-        PixCreateDTO createDTO = new PixCreateDTO(TipoOperacao.PIX, BigDecimal.valueOf(100), 1L, "chave123");
+        PixCreateDTO createDTO = new PixCreateDTO(TipoOperacao.PIX, BigDecimal.valueOf(100), 1L, "chavePixOrigem", "chavePixDestino");
 
         mockMvc.perform(post("/api/banco/contaCorrente/pix")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -297,5 +320,123 @@ public class ContaCorrenteControllerTest {
                 .andExpect(jsonPath("$.quatidadeParcelas").value(10));
     }
 
+    @Test
+    public void testPagarParcelaEmprestimoComSucesso() throws Exception {
+        when(contaCorrenteService.pagarParcelaEmprestimo(any(Long.class), any(Long.class), any(BigDecimal.class))).thenReturn(emprestimo);
+        when(emprestimoMapper.toDto(any(Emprestimo.class))).thenReturn(emprestimoResponseDTO);
 
+        ParcelaEmprestimoDTO dto = new ParcelaEmprestimoDTO(BigDecimal.valueOf(100), 1L, 1L);
+
+        mockMvc.perform(post("/api/banco/contaCorrente/emprestimo/pagar/parcela")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.valor").value(1000))
+                .andExpect(jsonPath("$.quatidadeParcelas").value(10));
+    }
+    
+    @Test
+    public void testSolicitarSeguroComSucesso() throws Exception {
+        when(contaCorrenteService.solicitarSeguro(any(Long.class), any(BigDecimal.class), any(Integer.class), any(TipoSeguro.class))).thenReturn(seguro);
+        when(seguroMapper.toDto(any(Seguro.class))).thenReturn(seguroResponseDTO);
+
+        SeguroCreateDTO createDTO = new SeguroCreateDTO(BigDecimal.valueOf(500), 5, TipoSeguro.VIDA, 1L);
+
+        mockMvc.perform(post("/api/banco/contaCorrente/seguro/solicitar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.valor").value(500))
+                .andExpect(jsonPath("$.quatidadeParcelas").value(5));
+    }
+
+    @Test
+    public void testPagarParcelaSeguroComSucesso() throws Exception {
+        when(contaCorrenteService.pagarParcelaSeguro(any(Long.class), any(Long.class), any(BigDecimal.class))).thenReturn(seguro);
+        when(seguroMapper.toDto(any(Seguro.class))).thenReturn(seguroResponseDTO);
+
+        ParcelaSeguroDTO dto = new ParcelaSeguroDTO(BigDecimal.valueOf(100), 1L, 1L);
+
+        mockMvc.perform(post("/api/banco/contaCorrente/seguro/pagar/parcela")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.valor").value(500))
+                .andExpect(jsonPath("$.quatidadeParcelas").value(5));
+    }
+
+    @Test
+    public void testCancelarSeguroComSucesso() throws Exception {
+        doNothing().when(contaCorrenteService).cancelarSeguro(1L);
+
+        mockMvc.perform(post("/api/banco/contaCorrente/seguro/cancelar/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testBuscarContaPorIdClienteComSucesso() throws Exception {
+        when(contaCorrenteService.buscarContaPorIdCliente(1L)).thenReturn(contaCorrente);
+        when(contaCorrenteMapper.toDto(contaCorrente)).thenReturn(contaCorrenteResponseDTO);
+
+        mockMvc.perform(get("/api/banco/contaCorrente/buscar/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.numero").value(123456))
+                .andExpect(jsonPath("$.chavePix").value("chavePix123"));
+    }
+
+    @Test
+    public void testBuscarContaPorChavePixComSucesso() throws Exception {
+        when(contaCorrenteService.buscarContaPorChavePix("chavePix123")).thenReturn(contaCorrente);
+        when(contaCorrenteMapper.toDto(contaCorrente)).thenReturn(contaCorrenteResponseDTO);
+
+        mockMvc.perform(get("/api/banco/contaCorrente/buscar/chavepix/chavePix123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.numero").value(123456))
+                .andExpect(jsonPath("$.chavePix").value("chavePix123"));
+    }
+
+    @Test
+    public void testBuscarContaPorNumeroComSucesso() throws Exception {
+        when(contaCorrenteService.buscarContaPorNumero(123456)).thenReturn(contaCorrente);
+        when(contaCorrenteMapper.toDto(contaCorrente)).thenReturn(contaCorrenteResponseDTO);
+
+        mockMvc.perform(get("/api/banco/contaCorrente/buscar/numero/123456"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.numero").value(123456))
+                .andExpect(jsonPath("$.chavePix").value("chavePix123"));
+    }
+
+    @Test
+    public void testBuscarEmprestimosDaContaComSucesso() throws Exception {
+        List<Emprestimo> emprestimos = Arrays.asList(emprestimo);
+        List<EmprestimoResponseDTO> emprestimosDto = Arrays.asList(emprestimoResponseDTO);
+
+        when(contaCorrenteService.buscarEmprestimosDaConta(1L)).thenReturn(emprestimos);
+        when(emprestimoMapper.toListDto(emprestimos)).thenReturn(emprestimosDto);
+
+        mockMvc.perform(get("/api/banco/contaCorrente/buscar/emprestimos/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].valor").value(1000));
+    }
+
+    @Test
+    public void testBuscarSegurosDaContaComSucesso() throws Exception {
+        List<Seguro> seguros = Arrays.asList(seguro);
+        List<SeguroResponseDTO> segurosDto = Arrays.asList(seguroResponseDTO);
+
+        when(contaCorrenteService.buscarSegurosDaConta(1L)).thenReturn(seguros);
+        when(seguroMapper.toListDto(seguros)).thenReturn(segurosDto);
+
+        mockMvc.perform(get("/api/banco/contaCorrente/buscar/seguros/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].valor").value(500));
+    }
 }

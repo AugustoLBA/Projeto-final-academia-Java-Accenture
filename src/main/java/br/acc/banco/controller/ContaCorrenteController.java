@@ -167,7 +167,7 @@ public class ContaCorrenteController {
     @PostMapping("/seguro/cancelar/{seguroId}")
     public ResponseEntity<Void> cancelarSeguro(@PathVariable Long seguroId) {
         contaCorrenteService.cancelarSeguro(seguroId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     
     @GetMapping("buscar/emprestimos/{id}")

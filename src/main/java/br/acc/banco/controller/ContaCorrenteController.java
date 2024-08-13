@@ -159,7 +159,8 @@ public class ContaCorrenteController {
         Seguro seguro = contaCorrenteService.solicitarSeguro(
             createDTO.getContaCorrenteId(),
             createDTO.getValor(),
-            createDTO.getQuantidadeParcelas());
+            createDTO.getQuantidadeParcelas(),
+            createDTO.getTipo());
         return ResponseEntity.status(HttpStatus.OK).body(seguroMapper.toDto(seguro));
     }
 

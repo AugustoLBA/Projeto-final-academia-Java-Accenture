@@ -33,6 +33,7 @@ public class SeguroMapper {
 		dto.setValor(seguro.getValor());
 		dto.setValorparcela(seguro.getValorParcela());
 		dto.setStatus(seguro.getStatus());
+		dto.setTipoSeguro(seguro.getTipo());
 		return dto;
 	}
 	

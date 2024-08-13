@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import br.acc.banco.models.enums.StatusSeguro;
+import br.acc.banco.models.enums.TipoSeguro;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,6 +35,10 @@ public class Seguro implements Serializable{
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private StatusSeguro status;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "tipo", nullable = false)
+	private TipoSeguro tipo;
 	
 	@Column(name = "quatidade_parcelas", nullable = false)
 	private int quantidadeParcelas;

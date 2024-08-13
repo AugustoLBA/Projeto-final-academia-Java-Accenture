@@ -24,6 +24,7 @@ import br.acc.banco.models.Seguro;
 import br.acc.banco.models.enums.StatusEmprestimo;
 import br.acc.banco.models.enums.StatusSeguro;
 import br.acc.banco.models.enums.TipoOperacao;
+import br.acc.banco.models.enums.TipoSeguro;
 import br.acc.banco.repository.ContaCorrenteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,19 @@ public class ContaCorrenteService {
 		try {
 			return contaCorrenteRepository.save(contaCorrente);
 		}catch(DataIntegrityViolationException e) {
-			throw new UsernameUniqueViolationException("Conta com numero: "+contaCorrente.getNumero()
-			+" já cadastrada !");
+			//UKhtia8msh3e6tpyr0xgwl8lb98' mensagem do numero da conta duplicado
+			//UK9ftydt3tld3sxvk87s3shfjwn' mesnagem de cliente já possui conta cadastrada
+			String aux = e.getMostSpecificCause().getMessage();
+			String message;
+			if(aux.contains("UK9ftydt3tld3sxvk87s3shfjwn'")) {
+				message = "Cliente com ID: "+contaCorrente.getCliente().getId()+" já possui uma conta !";
+			}
+			else if(aux.contains("UKhtia8msh3e6tpyr0xgwl8lb98'")) {
+				message = "Conta com numero: "+contaCorrente.getNumero()+" já cadastrada !";
+			}else {
+				message = "Erro ao salvar a conta!";
+			}
+			throw new UsernameUniqueViolationException(message);
 		}
 	}
 	public ContaCorrente buscarPorId(Long id) {
@@ -268,7 +280,7 @@ public class ContaCorrenteService {
 	}
 
 	@Transactional
-	public Seguro solicitarSeguro(Long contaId, BigDecimal valorSeguro, int quantidadeParcelas) {
+	public Seguro solicitarSeguro(Long contaId, BigDecimal valorSeguro, int quantidadeParcelas, TipoSeguro tipo) {
 		if (valorSeguro.compareTo(BigDecimal.ZERO) <= 0) {
 			throw new SeguroInvalidoException("O valor do seguro não pode ser menor ou igual a zero!");
 		}
@@ -287,6 +299,7 @@ public class ContaCorrenteService {
 		seguro.setQuantidadeParcelasPagas(0);
 		seguro.setValorParcela(valorParcela);
 		seguro.setStatus(StatusSeguro.ATIVO);
+		seguro.setTipo(tipo);
 		seguro.setConta(contaCorrente);
 
 		return seguroService.salvar(seguro);

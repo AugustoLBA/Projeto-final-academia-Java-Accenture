@@ -245,8 +245,6 @@ public class ContaCorrenteService {
 		Emprestimo emprestimo = emprestimoService.buscarPorId(emprestimoId);
 
 		if(emprestimo.getQuantidadeParcelas() == emprestimo.getQuantidadeParcelasPagas()) {
-			emprestimo.setStatus(StatusEmprestimo.PAGO);
-			emprestimoService.salvar(emprestimo);
 			throw new EmprestimoInvalidoException("O emprestimo já está QUITADO !");	
 		}
 		if(conta.getSaldo().compareTo(pagamentoParcela) < 0) {
@@ -267,6 +265,11 @@ public class ContaCorrenteService {
 		operacaoService.salvar(operacao);
 
 		emprestimo.setQuantidadeParcelasPagas(emprestimo.getQuantidadeParcelasPagas()+1);
+		if(emprestimo.getQuantidadeParcelas() == emprestimo.getQuantidadeParcelasPagas()) {
+			emprestimo.setStatus(StatusEmprestimo.PAGO);	
+			emprestimoService.salvar(emprestimo);
+		}
+		
 		return emprestimoService.salvar(emprestimo);
 
 	}

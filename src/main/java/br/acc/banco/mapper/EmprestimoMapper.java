@@ -28,7 +28,7 @@ public class EmprestimoMapper {
 	
 	public EmprestimoResponseDTO toDto(Emprestimo emprestimo) {
 		EmprestimoResponseDTO responseDTO = new EmprestimoResponseDTO();
-		responseDTO.setId(emprestimo.getConta().getId());		
+		responseDTO.setId(emprestimo.getId());		
 		responseDTO.setQuantidadesParcelasPagas(emprestimo.getQuantidadeParcelasPagas());
 		responseDTO.setQuatidadeParcelas(emprestimo.getQuantidadeParcelas());
 		responseDTO.setValor(emprestimo.getValor());

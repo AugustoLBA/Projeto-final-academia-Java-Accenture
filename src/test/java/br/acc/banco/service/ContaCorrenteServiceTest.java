@@ -422,7 +422,7 @@ public class ContaCorrenteServiceTest {
 
         when(contaCorrenteRepository.findById(1L)).thenReturn(Optional.of(contaCorrente));
         when(emprestimoService.buscarPorId(1L)).thenReturn(emprestimo);
-        when(emprestimoService.salvar(any(Emprestimo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+       
 
         EmprestimoInvalidoException exception = assertThrows(EmprestimoInvalidoException.class, () -> {
             contaCorrenteService.pagarParcelaEmprestimo(1L, 1L, BigDecimal.valueOf(500));

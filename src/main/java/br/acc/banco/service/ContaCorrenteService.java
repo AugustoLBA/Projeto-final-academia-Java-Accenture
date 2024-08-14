@@ -2,6 +2,7 @@ package br.acc.banco.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -199,6 +200,7 @@ public class ContaCorrenteService {
 		if(operacoes != null) {
 			return operacoes.stream()
 					.filter(operacao -> operacao.getConta().getId().equals(id))
+					.sorted(Comparator.comparing(Operacao::getDataRealizada).reversed())
 					.collect(Collectors.toList());
 		}
 		return operacoes;

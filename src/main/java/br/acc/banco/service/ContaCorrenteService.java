@@ -336,25 +336,26 @@ public class ContaCorrenteService {
 		conta.setSaldo(conta.getSaldo().subtract(valorParcela));
 
 		seguro.setQuantidadeParcelasPagas(seguro.getQuantidadeParcelasPagas() + 1);
-		if (seguro.getQuantidadeParcelasPagas() == seguro.getQuantidadeParcelas()) {
-			seguro.setStatus(StatusSeguro.RESGATADO);
-			conta.setSaldo(conta.getSaldo().add(seguro.getValor()));
-			
-			Operacao operacao = new Operacao();
-			operacao.setConta(conta);
-			operacao.setValor(seguro.getValor());
-			operacao.setTipo(TipoOperacao.RESGATOU_SEGURO);
-			
-			operacaoService.salvar(operacao);
-		}
-
+	
 		Operacao operacao = new  Operacao();
 		operacao.setSeguro(seguro);
 		operacao.setTipo(TipoOperacao.PARCELA_SEGURO);
 		operacao.setValor(valorParcela);
 		operacao.setConta(conta);
-
 		operacaoService.salvar(operacao);
+		
+		if (seguro.getQuantidadeParcelasPagas() == seguro.getQuantidadeParcelas()) {
+			seguro.setStatus(StatusSeguro.RESGATADO);
+			conta.setSaldo(conta.getSaldo().add(seguro.getValor()));
+			
+			Operacao operacaoResgate = new Operacao();
+			operacaoResgate.setConta(conta);
+			operacaoResgate.setValor(seguro.getValor());
+			operacaoResgate.setTipo(TipoOperacao.RESGATOU_SEGURO);
+			
+			operacaoService.salvar(operacaoResgate);
+		}
+
 
 		return seguroService.salvar(seguro);
 		

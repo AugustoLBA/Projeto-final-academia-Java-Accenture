@@ -33,7 +33,7 @@ public class Seguro implements Serializable{
 	private BigDecimal valor;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status", nullable = false)
+	@Column(name = "status", nullable = false, length = 25)
 	private StatusSeguro status;
 	
 	@Enumerated(EnumType.STRING)

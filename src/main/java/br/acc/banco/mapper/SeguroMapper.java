@@ -27,7 +27,7 @@ public class SeguroMapper {
 	
 	public SeguroResponseDTO toDto(Seguro seguro) {
 		SeguroResponseDTO dto = new SeguroResponseDTO();
-		dto.setId(seguro.getConta().getId());		
+		dto.setId(seguro.getId());		
 		dto.setQuantidadesParcelasPagas(seguro.getQuantidadeParcelasPagas());
 		dto.setQuatidadeParcelas(seguro.getQuantidadeParcelas());
 		dto.setValor(seguro.getValor());

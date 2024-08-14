@@ -2,6 +2,7 @@ package br.acc.banco.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -199,6 +200,7 @@ public class ContaCorrenteService {
 		if(operacoes != null) {
 			return operacoes.stream()
 					.filter(operacao -> operacao.getConta().getId().equals(id))
+					.sorted(Comparator.comparing(Operacao::getDataRealizada).reversed())
 					.collect(Collectors.toList());
 		}
 		return operacoes;
@@ -245,8 +247,6 @@ public class ContaCorrenteService {
 		Emprestimo emprestimo = emprestimoService.buscarPorId(emprestimoId);
 
 		if(emprestimo.getQuantidadeParcelas() == emprestimo.getQuantidadeParcelasPagas()) {
-			emprestimo.setStatus(StatusEmprestimo.PAGO);
-			emprestimoService.salvar(emprestimo);
 			throw new EmprestimoInvalidoException("O emprestimo já está QUITADO !");	
 		}
 		if(conta.getSaldo().compareTo(pagamentoParcela) < 0) {
@@ -267,6 +267,11 @@ public class ContaCorrenteService {
 		operacaoService.salvar(operacao);
 
 		emprestimo.setQuantidadeParcelasPagas(emprestimo.getQuantidadeParcelasPagas()+1);
+		if(emprestimo.getQuantidadeParcelas() == emprestimo.getQuantidadeParcelasPagas()) {
+			emprestimo.setStatus(StatusEmprestimo.PAGO);	
+			emprestimoService.salvar(emprestimo);
+		}
+		
 		return emprestimoService.salvar(emprestimo);
 
 	}

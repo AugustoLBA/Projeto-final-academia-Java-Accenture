@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.acc.banco.dto.AgenciaCreateDTO;
-import br.acc.banco.dto.AgenciaResponseDTO;
+import br.acc.banco.dto.agencia.AgenciaCreateDTO;
+import br.acc.banco.dto.agencia.AgenciaResponseDTO;
+import br.acc.banco.mapper.AgenciaMapper;
 import br.acc.banco.models.Agencia;
 import br.acc.banco.service.AgenciaService;
 import jakarta.validation.Valid;
@@ -24,23 +25,25 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("api/banco/agencia")
 public class AgenciaController {
 
-	private AgenciaService agenciaService;
+	private final AgenciaService agenciaService;
+	
+	private final AgenciaMapper agenciaMapper;
 	
 	@PostMapping
 	public ResponseEntity<AgenciaResponseDTO> save(@Valid @RequestBody AgenciaCreateDTO createDTO){
-		Agencia agencia = agenciaService.salvar(agenciaService.toAgencia(createDTO));
-		return ResponseEntity.status(HttpStatus.CREATED).body(agenciaService.toDto(agencia));
+		Agencia agencia = agenciaService.salvar(agenciaMapper.toAgencia(createDTO));
+		return ResponseEntity.status(HttpStatus.CREATED).body(agenciaMapper.toDto(agencia));
 	}
 	
 	@GetMapping
 	public ResponseEntity<List<AgenciaResponseDTO>> getAll(){
-		List<AgenciaResponseDTO> responseDTO = agenciaService.toListDto(agenciaService.buscarTodos());
+		List<AgenciaResponseDTO> responseDTO = agenciaMapper.toListDto(agenciaService.buscarTodos());
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<AgenciaResponseDTO> findById(@PathVariable Long id){
-		AgenciaResponseDTO responseDTO = agenciaService.toDto(agenciaService.buscarPorId(id));
+		AgenciaResponseDTO responseDTO = agenciaMapper.toDto(agenciaService.buscarPorId(id));
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 	

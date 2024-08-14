@@ -532,10 +532,10 @@ public class ContaCorrenteServiceTest {
     }
 
     @Test
-    public void testCancelarSeguroJaPagoOuCancelado() {
+    public void testCancelarSeguroJaResgatadoOuCancelado() {
         Seguro seguroPago = new Seguro();
         seguroPago.setId(1L);
-        seguroPago.setStatus(StatusSeguro.PAGO);
+        seguroPago.setStatus(StatusSeguro.RESGATADO);
 
         when(seguroService.buscarPorId(1L)).thenReturn(seguroPago);
 
@@ -543,7 +543,7 @@ public class ContaCorrenteServiceTest {
             contaCorrenteService.cancelarSeguro(1L);
         });
 
-        assertTrue(exceptionPago.getMessage().contains("Este seguro já foi pago ou cancelado"));
+        assertTrue(exceptionPago.getMessage().contains("Este seguro já foi resgatado ou cancelado"));
 
         Seguro seguroCancelado = new Seguro();
         seguroCancelado.setId(1L);
@@ -555,7 +555,7 @@ public class ContaCorrenteServiceTest {
             contaCorrenteService.cancelarSeguro(1L);
         });
 
-        assertTrue(exceptionCancelado.getMessage().contains("Este seguro já foi pago ou cancelado"));
+        assertTrue(exceptionCancelado.getMessage().contains("Este seguro já foi resgatado ou cancelado"));
     }
 
     @Test

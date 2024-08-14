@@ -228,6 +228,12 @@ public class ContaCorrenteService {
 		emprestimo.setValorParcela(valorParcela);
 		emprestimo.setStatus(StatusEmprestimo.APROVADO);
 		emprestimo.setConta(contaCorrente);
+		
+		Operacao operacao = new Operacao();
+		operacao.setConta(contaCorrente);
+		operacao.setValor(valorEmprestimo);
+		operacao.setTipo(TipoOperacao.FEZ_EMPRESTIMO);
+		operacaoService.salvar(operacao);
 
 
 		return emprestimoService.salvar(emprestimo);
@@ -312,7 +318,7 @@ public class ContaCorrenteService {
 		Seguro seguro = seguroService.buscarPorId(seguroId);
 
 		if (seguro.getQuantidadeParcelasPagas() == seguro.getQuantidadeParcelas()) {
-			throw new IllegalArgumentException("Todas as parcelas do seguro já foram pagas!");
+			throw new SeguroInvalidoException("Todas as parcelas do seguro já foram pagas!");
 		}
 		if(seguro.getStatus().equals(StatusSeguro.CANCELADO)) {
 			throw new SeguroInvalidoException("O seguro foi cancelado !");
@@ -324,14 +330,22 @@ public class ContaCorrenteService {
 		}
 		if(valorParcela.compareTo(seguro.getValorParcela()) < 0
 				|| valorParcela.compareTo(seguro.getValorParcela()) > 0 ) {
-			throw new EmprestimoInvalidoException("O valor da PARCELA não pode ser maior e nem menor que: R$"+seguro.getValorParcela());
+			throw new SeguroInvalidoException("O valor da PARCELA não pode ser maior e nem menor que: R$"+seguro.getValorParcela());
 		}
 
 		conta.setSaldo(conta.getSaldo().subtract(valorParcela));
 
 		seguro.setQuantidadeParcelasPagas(seguro.getQuantidadeParcelasPagas() + 1);
 		if (seguro.getQuantidadeParcelasPagas() == seguro.getQuantidadeParcelas()) {
-			seguro.setStatus(StatusSeguro.PAGO);
+			seguro.setStatus(StatusSeguro.RESGATADO);
+			conta.setSaldo(conta.getSaldo().add(seguro.getValor()));
+			
+			Operacao operacao = new Operacao();
+			operacao.setConta(conta);
+			operacao.setValor(seguro.getValor());
+			operacao.setTipo(TipoOperacao.RESGATOU_SEGURO);
+			
+			operacaoService.salvar(operacao);
 		}
 
 		Operacao operacao = new  Operacao();
@@ -349,8 +363,8 @@ public class ContaCorrenteService {
 	@Transactional
 	public void cancelarSeguro(Long seguroId) {
 		Seguro seguro = seguroService.buscarPorId(seguroId);
-		if (seguro.getStatus() == StatusSeguro.PAGO || seguro.getStatus() == StatusSeguro.CANCELADO) {
-			throw new SeguroInvalidoException("Este seguro já foi pago ou cancelado!");
+		if (seguro.getStatus() == StatusSeguro.RESGATADO || seguro.getStatus() == StatusSeguro.CANCELADO) {
+			throw new SeguroInvalidoException("Este seguro já foi resgatado ou cancelado!");
 		}
 
 		seguro.setStatus(StatusSeguro.CANCELADO);

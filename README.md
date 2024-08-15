@@ -17,7 +17,7 @@ G6 Bank é um projeto bancário desenvolvido em Java utilizando o framework Spri
 Clone o repositório ou baixe o arquivo ZIP do projeto e descompacte-o no seu workspace da IDE STS:
 
 ```bash
-git clone https://github.com/seu-usuario/g6-bank.git
+git clone https://github.com/AugustoLBA/Projeto-final-academia-Java-Accenture.git
 ```
 ## 2. Criar o Banco de Dados
 

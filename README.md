@@ -18,14 +18,14 @@ Clone o repositório ou baixe o arquivo ZIP do projeto e descompacte-o no seu wo
 
 ```bash
 git clone https://github.com/seu-usuario/g6-bank.git
-
+```
 ## 2. Criar o Banco de Dados
 
 Acesse o MySQL e crie um banco de dados chamado `banco`:
 
 ```sql
 CREATE DATABASE banco;
-
+```
 ## 3. Configurar o Arquivo `application.properties`
 
 No diretório do projeto, abra o arquivo `src/main/resources/application.properties` e adicione o seu username e password de acesso ao MySQL:
@@ -35,7 +35,7 @@ spring.datasource.url=jdbc:mysql://localhost:3306/banco
 spring.datasource.username=SEU_USERNAME
 spring.datasource.password=SUA_SENHA
 spring.jpa.hibernate.ddl-auto=update
-
+```
 ## 4. Iniciar a Aplicação
 
 Abra a IDE STS, importe o projeto e inicie a aplicação com a opção **Run As Spring Boot App**.

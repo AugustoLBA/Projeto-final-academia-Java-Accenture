@@ -1,6 +1,6 @@
 # G6 Bank
 
-G6 Bank é um projeto bancário desenvolvido em Java utilizando o framework Spring Boot. Ele oferece funcionalidades essenciais para o gerenciamento de contas, clientes, transações e investimentos, com suporte a operações bancárias, gestão de clientes e controle de investimentos financeiros.
+G6 Bank é um projeto bancário desenvolvido em Java utilizando o framework Spring Boot. Ele oferece funcionalidades essenciais para o gerenciamento de contas, clientes, transações e serviços, com suporte a operações bancárias.
 
 ## Requisitos
 

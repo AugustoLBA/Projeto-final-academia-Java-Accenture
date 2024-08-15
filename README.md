@@ -67,9 +67,18 @@ Para expor o backend local na nuvem e permitir a comunicação com o frontend, s
 
 ### Tela Esperada
 
-A seguinte tela deverá aparecer:
+Uma tela com informações desse tipo deverá aparecer:
 
-![ngrok terminal](link-para-screenshot)
+```bash
+Session Status                online                                                      
+Account                       dududutragarcia@gmail.com (Plan: Personal)                  
+Version                       3.14.0                                                      
+Region                        South America (sa)                                          
+Latency                       89ms                                                        
+Web Interface                 http://127.0.0.1:4040                                       
+Forwarding                    https://joseeduardo.ngrok.app -> http://localhost:8080 
+```
+
 
 ## 7. Acessar o Frontend
 

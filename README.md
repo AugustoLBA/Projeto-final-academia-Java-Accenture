@@ -52,7 +52,7 @@ Agora que o backend está rodando, você pode testar as funcionalidades utilizan
 Para expor o backend local na nuvem e permitir a comunicação com o frontend, siga os passos abaixo:
 
 1. Baixe o [ngrok](https://ngrok.com/download) e descompacte o arquivo no seu sistema.
-2. Abra um terminal no diretório onde o ngrok foi descompactado.
+2. Ao executar o arquivo descompactado o terminal abrirá automaticamente.
 3. Execute o comando para adicionar o token de autenticação:
 
     ```bash

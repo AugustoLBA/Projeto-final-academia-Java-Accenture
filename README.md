@@ -45,7 +45,9 @@ Abra a IDE STS, importe o projeto e inicie a aplicação com a opção **Run As 
 Agora que o backend está rodando, você pode testar as funcionalidades utilizando o Swagger ou Postman.
 
 - **Swagger URL:** `http://localhost:8080/swagger-ui.html`
-- **Postman:** Importe a coleção para testar os endpoints da API.
+- **Postman:** Teste os endpoints da API.
+
+É NECESSARIO CRIAR PRIMEIRAMENTE UM CLIENTE PARA DEPOIS CRIAR UMA CONTA PARA ESSE CLIENTE.
 
 ## 6. Tornar a Aplicação Visível na Nuvem com Ngrok
 

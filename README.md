@@ -1,6 +1,6 @@
 # G6 Bank
 
-G6 Bank é um projeto bancário desenvolvido em Java utilizando o framework Spring Boot. Ele oferece funcionalidades essenciais para o gerenciamento de contas, clientes, transações e investimentos, com suporte a operações bancárias, gestão de clientes e controle de investimentos financeiros.
+G6 Bank é um projeto bancário desenvolvido em Java utilizando o framework Spring Boot. Ele oferece funcionalidades essenciais para o gerenciamento de contas, clientes, transações e serviços, com suporte a operações bancárias.
 
 ## Requisitos
 
@@ -17,7 +17,7 @@ G6 Bank é um projeto bancário desenvolvido em Java utilizando o framework Spri
 Clone o repositório ou baixe o arquivo ZIP do projeto e descompacte-o no seu workspace da IDE STS:
 
 ```bash
-git clone https://github.com/seu-usuario/g6-bank.git
+git clone https://github.com/AugustoLBA/Projeto-final-academia-Java-Accenture.git
 ```
 ## 2. Criar o Banco de Dados
 
@@ -45,14 +45,16 @@ Abra a IDE STS, importe o projeto e inicie a aplicação com a opção **Run As 
 Agora que o backend está rodando, você pode testar as funcionalidades utilizando o Swagger ou Postman.
 
 - **Swagger URL:** `http://localhost:8080/swagger-ui.html`
-- **Postman:** Importe a coleção para testar os endpoints da API.
+- **Postman:** Teste os endpoints da API.
+
+É NECESSARIO CRIAR PRIMEIRAMENTE UM CLIENTE PARA DEPOIS CRIAR UMA CONTA PARA ESSE CLIENTE.
 
 ## 6. Tornar a Aplicação Visível na Nuvem com Ngrok
 
 Para expor o backend local na nuvem e permitir a comunicação com o frontend, siga os passos abaixo:
 
 1. Baixe o [ngrok](https://ngrok.com/download) e descompacte o arquivo no seu sistema.
-2. Abra um terminal no diretório onde o ngrok foi descompactado.
+2. Ao executar o arquivo descompactado o terminal abrirá automaticamente.
 3. Execute o comando para adicionar o token de autenticação:
 
     ```bash
@@ -67,9 +69,18 @@ Para expor o backend local na nuvem e permitir a comunicação com o frontend, s
 
 ### Tela Esperada
 
-A seguinte tela deverá aparecer:
+Uma tela com informações desse tipo deverá aparecer:
 
-![ngrok terminal](link-para-screenshot)
+```bash
+Session Status                online                                                      
+Account                       dududutragarcia@gmail.com (Plan: Personal)                  
+Version                       3.14.0                                                      
+Region                        South America (sa)                                          
+Latency                       89ms                                                        
+Web Interface                 http://127.0.0.1:4040                                       
+Forwarding                    https://joseeduardo.ngrok.app -> http://localhost:8080 
+```
+
 
 ## 7. Acessar o Frontend
 
